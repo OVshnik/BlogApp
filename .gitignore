@@ -50,3 +50,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+/.vs/BlogApp/v17
+/BlogApp/.vs/BlogApp
+/BlogApp/BlogApp/obj
