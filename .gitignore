@@ -53,3 +53,7 @@ dkms.conf
 /.vs/BlogApp/v17
 /BlogApp/.vs/BlogApp
 /BlogApp/BlogApp/obj
+/BlogApp/.vs/ProjectEvaluation
+/BlogApp/BlogApp/bin/Debug/net8.0
+/BlogApp/BlogApp.Data/obj
+/.vs
