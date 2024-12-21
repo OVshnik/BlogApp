@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Identity.Client;
-using SocialNetwork.ViewModels.Users;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BlogApp.Controllers
@@ -23,6 +22,12 @@ namespace BlogApp.Controllers
 		{
 			_userService = userService;
 			_mapper = mapper;
+		}
+		[Authorize]
+		[HttpGet]
+		public IActionResult UserPage()
+		{
+			return View();
 		}
 		[Authorize("OnlyForAdmin")]
 		[Route("GetUser")]

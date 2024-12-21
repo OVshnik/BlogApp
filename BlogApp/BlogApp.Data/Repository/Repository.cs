@@ -32,9 +32,9 @@ namespace BlogApp.Data.Repository
 		{
 			return await Set.FindAsync(id);
 		}
-		public IEnumerable<T> GetAll()
+		public async Task<List<T>> GetAll()
 		{
-			return Set;
+			return await Task.Run(()=>Set.AsQueryable().ToListAsync());
 		}
 		public async Task Update(T item)
 		{

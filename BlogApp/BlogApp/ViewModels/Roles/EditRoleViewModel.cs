@@ -9,5 +9,6 @@ namespace BlogApp.ViewModels.Roles
 		[Display(Name = "Роль", Prompt = "Поменять роль")]
 		public string Name { get; set; } = String.Empty;
 		public string NormalizedName { get; set; }=String.Empty;
+		public string ?Description {  get; set; } = String.Empty;
 	}
 }

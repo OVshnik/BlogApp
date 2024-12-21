@@ -1,0 +1,32 @@
+﻿@using BlogApp.ViewModels.ArticlesTags.Tags
+@{
+	ViewData["Title"] = "AddTag";
+}
+@model CreateTagViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.css">
+
+<label for="exampleInputPassword1" class="form-label">Добавление тега</label>
+<form class="frm" method="post" asp-controller="Tag" asp-action="CreateTag">
+	<div asp-validation-summary="ModelOnly"></div>
+	<div>
+		<div class="mb-3">
+			<input asp-for="Name" class="form-control" />
+			<span asp-validation-for="Name" class="text-danger"></span>
+		</div>
+	</div>
+	<div>
+		<input class="btn btn-primary" type="submit" value="Добавить" />
+	</div>
+</form>
+<div>
+	<label for="exampleInputPassword1" class="form-label">
+		<a class="" asp-area="" asp-controller="Tag" asp-action="GetTags">Перейти к списку всех тегов</a>
+	</label>
+</div>
+@section scripts {
+
+	<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

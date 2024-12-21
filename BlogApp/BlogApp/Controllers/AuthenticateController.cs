@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using BlogApp.Data.Models;
 using BlogApp.Services;
+using BlogApp.ViewModels.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SocialNetwork.ViewModels.Users;
 using System;
 using System.Security.Claims;
 
@@ -18,10 +18,16 @@ namespace BlogApp.Controllers
 			_signInManager = signInManager;
 			_mapper = mapper;
 		}
-		[HttpGet]
-		public IActionResult Login(string ?returnUrl)
+        [Route("Login")]
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View("Login");
+        }
+        [HttpGet]
+		public IActionResult Login(string ?returnUrl="")
 		{
-			return Ok(new LoginViewModel { ReturnUrl = returnUrl });
+			return View(new LoginViewModel { ReturnUrl = returnUrl });
 		}
 		[Route("Login")]
 		[HttpPost]

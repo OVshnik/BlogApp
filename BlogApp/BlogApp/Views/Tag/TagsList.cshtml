@@ -1,0 +1,21 @@
+﻿@using BlogApp.ViewModels.ArticlesTags.Tags
+@{
+	ViewData["Title"] = "TagsList";
+}
+@model ListTagsViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.css">
+
+<div class="form-control back-white fr-block">
+	@if(Model.Tags.Count!=0)
+	{
+		@foreach(var tag in Model.Tags)
+		{
+			<div class="list-group-flush">
+				<div class="list-group-flush">@tag.Tag.Name</div>
+			</div>
+		}
+	}
+</div>
+<a class="" method=get asp-area="" asp-controller="Tag" asp-action="CreateTag">Добавить тег</a>

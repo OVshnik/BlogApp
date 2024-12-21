@@ -1,0 +1,52 @@
+﻿@using BlogApp.Data.Models
+@using BlogApp.ViewModels.ArticlesTags
+@{
+	ViewData["Title"] = "AddArticle";
+}
+@model ArticleTagViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.css">
+
+<label for="exampleInputPassword1" class="form-label">Добавление статьи</label>
+
+<form class="frm" method="post" asp-controller="Article" asp-route-tags="TagsBox" asp-action="CreateArticle">
+	<div asp-validation-summary="ModelOnly"></div>
+	@foreach (var tag in Model.ListTags.Tags)
+	{
+		<p class="form-check-inline">
+			<input class="form-check-input" id="@tag.Tag.Id" name="TagsBox" type="checkbox" checked="@tag.IsChecked" value="@tag.Tag.Name">
+			<label class="form-check-label" for="@tag.Tag.Id">
+				@tag.Tag.Name
+			</label>
+		</p>
+	}
+	<div>
+		<div class="mb-3">
+			<input asp-for="CreateArticle.Title" class="form-control" />
+			<span  asp-validation-for="CreateArticle.Title" class="text-danger"></span>
+		</div>
+		<div class="mb-3">
+			<textarea asp-for="CreateArticle.Description" class="form-control">
+			</textarea>
+			<span asp-validation-for="CreateArticle.Description" class="text-danger"></span>
+		</div>
+		<div class="mb-3">
+			<textarea asp-for="CreateArticle.Content" class="form-control">
+			</textarea>
+			<span asp-validation-for="CreateArticle.Content" class="text-danger"></span>
+		</div>
+	</div>
+	<div>
+		<input class="btn btn-primary" type="submit" value="Добавить" />
+	</div>
+</form>
+<div>
+	<label for="exampleInputPassword1" class="form-label">
+		<a class="" asp-area="" asp-controller="Article" asp-action="GetAllRoles">Перейти к списку всех статей</a>
+	</label>
+</div>
+@section scripts {
+	<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

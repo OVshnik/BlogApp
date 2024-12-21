@@ -5,16 +5,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Reflection.Metadata;
-
+using BlogApp.Data.Models;
+using BlogApp.Services;
 namespace BlogApp.Controllers
 {
 	public class RoleController : Controller
 	{
-		private readonly RoleManager<IdentityRole> _roleManager;
-		public RoleController(RoleManager<IdentityRole> roleManager)
+		private readonly RoleManager<Role> _roleManager;
+		public RoleController(RoleManager<Role> roleManager)
 		{
 			_roleManager = roleManager;
-			
 		}
 		[Authorize("Admin")]
 		[Route("CreateBaseRoles")]
@@ -24,28 +24,42 @@ namespace BlogApp.Controllers
 			await CreateBaseRoles();
 			return Ok();
 		}
-		[Authorize("Admin")]
-		[Route("CreateRole")]
+		//[Authorize("Admin")]
+		[Route("AddRole")]
 		[HttpGet]
 		public IActionResult CreateRole()
 		{
-			return Ok(new CreateRoleViewModel());
+			return View("AddRole", new CreateRoleViewModel());
 		}
-		[Authorize("Admin")]
-		[Route("CreateRole")]
+		//[Authorize("Admin")]
+		[Route("AddRole")]
 		[HttpPost]
 		public async Task<IActionResult> CreateRole(CreateRoleViewModel role)
 		{
-			var newRole = new IdentityRole()
+			var newRole = new Role()
 			{
 				Name = role.Name,
-				NormalizedName = role.Name.ToUpper()
+				NormalizedName = role.Name.ToUpper(),
+				Description = role.Description,
 			};
-			if (await _roleManager.GetRoleNameAsync(newRole) == null)
+			await _roleManager.CreateAsync(newRole);
+			return RedirectToPage("/RolesList");
+		}
+		//[Authorize("Admin")]
+		[Route("RolesList")]
+		[HttpGet]
+		public IActionResult GetAllRoles()
+		{
+			var allRoles = _roleManager.Roles.ToList();
+			if (allRoles != null)
 			{
-				await _roleManager.CreateAsync(newRole);
+				var roles = new ListRolesViewModel()
+				{
+					Roles = allRoles
+				};
+				return View("RolesList", roles);
 			}
-			return Ok();
+			return RedirectToPage("/AddRole");
 		}
 		[Authorize("Admin")]
 		[Route("GetRoleById")]
@@ -86,6 +100,7 @@ namespace BlogApp.Controllers
 					Id = findRole.Id,
 					Name = findRole.Name,
 					NormalizedName = findRole.NormalizedName,
+					Description = findRole.Description,
 				};
 				return Ok(role);
 
@@ -106,27 +121,38 @@ namespace BlogApp.Controllers
 			}
 			return Ok();
 		}
+		[AcceptVerbs("Get", "Post")]
+		public async Task<IActionResult> CheckRoleName(string name)
+		{
+			var tags = await _roleManager.FindByNameAsync(name);
+			if (tags == null)
+			{
+				return Json(true);
+			}
+			return Json(false);
+		}
 		public async Task CreateBaseRoles()
 		{
-			var admin = new IdentityRole()
+			var admin = new Role()
 			{
 				Name = "Admin",
 				NormalizedName = "ADMIN"
 			};
-			var user = new IdentityRole()
+			var user = new Role()
 			{
 				Name = "User",
 				NormalizedName = "USER"
 			};
-			var moderator = new IdentityRole()
+			var moderator = new Role()
 			{
 				Name = "Moderator",
 				NormalizedName = "MODERATOR"
 			};
-            await _roleManager.CreateAsync(admin);
+			await _roleManager.CreateAsync(admin);
 			await _roleManager.CreateAsync(user);
 			await _roleManager.CreateAsync(moderator);
 		}
+
 	}
 }
 

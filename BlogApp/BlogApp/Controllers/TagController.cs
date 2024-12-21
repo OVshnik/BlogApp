@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using Azure;
 using BlogApp.Data.Models;
 using BlogApp.Services;
-using BlogApp.ViewModels.Articles;
-using BlogApp.ViewModels.Tags;
+using BlogApp.ViewModels.ArticlesTags.Tags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ using System.Linq.Expressions;
 
 namespace BlogApp.Controllers
 {
-	public class TagController : Controller
+    public class TagController : Controller
 	{
 		private readonly IMapper _mapper;
 		private readonly TagService _tagService;
@@ -33,18 +33,23 @@ namespace BlogApp.Controllers
 			{
 				ArticleId = articleId,
 			};
-			return Ok(newTag);
+			return View("AddTag", newTag);
 		}
 		[Authorize("OnlyUser&Admin")]
 		[Route("CreateTag")]
 		[HttpPost]
 		public async Task<IActionResult> CreateTag(CreateTagViewModel model)
 		{
-			var tag = _mapper.Map<Tag>(model);
+			if (ModelState.IsValid)
+			{
+				var tag = _mapper.Map<Tag>(model);
 
-			await _tagService.CreateNewTagAsync(tag);
+				await _tagService.CreateNewTagAsync(tag);
 
-			return Ok("Tag added");
+				return RedirectToPage("/CreateTag");
+			}
+			return RedirectToPage("/TagsList");
+
 		}
 		[Authorize("OnlyUser&Admin")]
 		[Route("GetTag")]
@@ -61,20 +66,21 @@ namespace BlogApp.Controllers
 			return Ok();
 		}
 		[Authorize("OnlyUser&Admin")]
-		[Route("GetAllTags")]
+		[Route("TagsList")]
 		[HttpGet]
 		public async Task<IActionResult> GetTags()
 		{
 			var findTags = await _tagService.GetAllTagsAsync();
 			if (findTags != null)
 			{
-				var tags = new ListTagsViewModel()
+				var tags = new ListTagsViewModel();
+				foreach (var tag in findTags)
 				{
-					Tags = findTags
-				};
-				return Ok(tags);
+					tags.Tags.Add(new TagViewModel(tag));
+				}
+				return View("TagsList", tags);
 			}
-			return Ok();
+			return RedirectToPage("AddTag");
 		}
 		[Authorize("OnlyUser&Admin")]
 		[Route("EditTag")]
@@ -125,6 +131,15 @@ namespace BlogApp.Controllers
 			}
 			return Ok();
 		}
-
+		[AcceptVerbs("Get", "Post")]
+		public async Task<IActionResult> CheckTagName(string name)
+		{
+			var tags = await _tagService.GetAllTagsAsync();
+			if (!tags.Where(x => x.Name == name).Any())
+			{
+				return Json(true);
+			}
+			return Json(false);
+		}
 	}
 }

@@ -8,6 +8,7 @@ using GenericUnitOfWork;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Security.Claims;
 
 internal class Program
@@ -29,7 +30,7 @@ internal class Program
 			.AddCustomRepository<Tag, TagRepository>()
 			.AddCustomRepository<Comment, CommentRepository>();
 
-		builder.Services.AddIdentity<User, IdentityRole>(opts =>
+		builder.Services.AddIdentity<User, Role>(opts =>
 		{
 			opts.Password.RequiredLength = 10;
 			opts.Password.RequireNonAlphanumeric = false;

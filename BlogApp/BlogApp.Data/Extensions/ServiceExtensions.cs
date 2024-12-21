@@ -13,7 +13,7 @@ namespace BlogApp.Data.Extensions
 	{
 		public static IServiceCollection AddUnitOfWork(this IServiceCollection services)
 		{
-			services.AddSingleton<IUnitOfWork, UnitOfWork>();
+			services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 			return services;
 		}

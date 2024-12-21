@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using BlogApp.Data.Models;
 using BlogApp.Services;
-using BlogApp.ViewModels.Articles;
-using BlogApp.ViewModels.Tags;
+using BlogApp.ViewModels.ArticlesTags.Articles;
+using BlogApp.ViewModels.ArticlesTags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using BlogApp.ViewModels.ArticlesTags.Tags;
 
 namespace BlogApp.Controllers
 {
@@ -15,40 +16,51 @@ namespace BlogApp.Controllers
 		private readonly IMapper _mapper;
 		private readonly ArticleService _articleService;
 		private readonly UserService _userService;
-		public ArticleController(IMapper mapper, ArticleService articleService, UserService userService)
+		private readonly TagService _tagService;
+		public ArticleController(IMapper mapper, ArticleService articleService, UserService userService, TagService tagService)
 		{
 			_mapper = mapper;
 			_articleService = articleService;
 			_userService = userService;
+			_tagService = tagService;
 		}
 		[Authorize]
-		[Route("CreateArticle")]
+		[Route("AddArticle")]
 		[HttpGet]
-		public IActionResult CreateArticle()
+		public async Task<IActionResult> CreateArticle()
 		{
-			var newArticle = new CreateArticleViewModel();
-			return Ok(newArticle);
+			var newArticle = new ArticleTagViewModel();
+
+			var tags = await _tagService.GetAllTagsAsync();
+
+			foreach (var tag in tags)
+			{
+				newArticle.ListTags.Tags.Add(new TagViewModel(tag));
+			}
+
+			return View("AddArticle", newArticle);
 		}
 		[Authorize]
-		[Route("CreateArticle")]
+		[Route("AddArticle")]
 		[HttpPost]
-		public async Task<IActionResult> CreateArticle(CreateArticleViewModel model)
+		public async Task<IActionResult> CreateArticle(ArticleTagViewModel model)
 		{
 			var currentUser = await _userService.GetCurrentUserAsync(User);
 
-			if (model != null&&currentUser!=null)
+			if (model != null && currentUser != null)
 			{
-				var article = _mapper.Map<Article>(model);
+				var article = _mapper.Map<Article>(model.CreateArticle);
 
 				article.AuthorId = currentUser.Id;
 
 				await _articleService.CreateNewArticleAsync(article);
-				return Ok("Article has been added");
+
+				return View("AddArticle");
 			}
-			return Ok("Article doesn't added");
+			return View("AddArticle");
 		}
 		[Authorize]
-		[Route("GetAllArticles")]
+		[Route("ArticlesList")]
 		[HttpGet]
 		public async Task<IActionResult> GetAllArticle()
 		{
@@ -59,11 +71,11 @@ namespace BlogApp.Controllers
 
 				articleList.Articles.AddRange(articles);
 
-				var result = articleList.Articles.OrderBy(x => x.Author.LastName).ToList();
+				//var result = articleList.Articles.OrderBy(x => x.Author.LastName).ToList();
 
-				return Ok(result);
+				return View("ArticlesList", articleList);
 			}
-			return View();
+			return RedirectToPage("/AddArticle");
 		}
 		[Authorize]
 		[Route("GetArticlesByAuthor")]

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace BlogApp.Data.Repository
 {
 	public class TagRepository : Repository<Tag>
@@ -22,11 +23,11 @@ namespace BlogApp.Data.Repository
 		}
 		public async Task<List<Tag>> GetAllTagsByArticleAsync(Article article)
 		{
-			return await Task.Run(() => Set.Include(x=>x.Articles).AsEnumerable().Where(x=>x.Id==article.Id).ToList());
+			return await Task.Run(() => Set.Include(x => x.Articles).AsEnumerable().Where(x => x.Id == article.Id).ToList());
 		}
 		public async Task<List<Tag>> GetAllTags()
 		{
-			return await Task.Run(()=> GetAll().ToList());
+			return await GetAll();
 		}
 		public async Task UpdateTag(Tag updTag)
 		{

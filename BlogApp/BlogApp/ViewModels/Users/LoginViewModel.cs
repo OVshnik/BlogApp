@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 
-namespace SocialNetwork.ViewModels.Users
+namespace BlogApp.ViewModels.Users
 {
 	public class LoginViewModel
 	{

@@ -16,32 +16,24 @@ namespace BlogApp.ViewModels.Users
 
 		[Required(ErrorMessage = "Поле Email обязательно для заполнения")]
         [EmailAddress]
-        [Display(Name = "Email")]
-        public string EmailReg { get; set; } = string.Empty;
+        [Display(Name = "Email", Prompt = "Введите email")]
+		public string EmailReg { get; set; } = string.Empty;
 
-		[Required(ErrorMessage = "Поле Год обязательно для заполнения")]
-        [Display(Name = "Год")]
-        public int Year { get; set; }
-
-        [Required(ErrorMessage = "Поле День обязательно для заполнения")]
-        [Display(Name = "День")]
-        public int Date { get; set; }
-
-        [Required(ErrorMessage = "Поле Месяц обязательно для заполнения")]
-        [Display(Name = "Месяц")]
-        public int Month { get; set; }
+        [Required(ErrorMessage = "Поле дата рождения обязательно для заполнения")]
+        [Display(Name = "Дата рождения")]
+        public DateTime BirthDate { get; set; }
 
         [Required(ErrorMessage = "Поле Пароль обязательно для заполнения")]
         [DataType(DataType.Password)]
-        [Display(Name = "Пароль")]
-        [StringLength(100, ErrorMessage = "Поле {0} должно иметь минимум {2} и максимум {1} символов.", MinimumLength = 10)]
+        [Display(Name = "Пароль", Prompt = "Введите пароль")]
+		[StringLength(100, ErrorMessage = "Поле {0} должно иметь минимум {2} и максимум {1} символов.", MinimumLength = 10)]
         public string PasswordReg { get; set; } = string.Empty;
 
 		[Required(ErrorMessage = "Обязательно подтвердите пароль")]
         [Compare("PasswordReg", ErrorMessage = "Пароли не совпадают")]
         [DataType(DataType.Password)]
-        [Display(Name = "Подтвердить пароль")]
-        public string PasswordConfirm { get; set; } = string.Empty;
+        [Display(Name = "Подтвердить пароль", Prompt = "Подтвердите пароль")]
+		public string PasswordConfirm { get; set; } = string.Empty;
 
 		public string Login => EmailReg;
     }

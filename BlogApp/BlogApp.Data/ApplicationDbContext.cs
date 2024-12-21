@@ -17,6 +17,7 @@ namespace BlogApp.Data
 			builder.ApplyConfiguration<Article>(new ArticleConfiguration());
 			builder.ApplyConfiguration<Tag>(new TagConfiguration());
 			builder.ApplyConfiguration<Comment>(new CommentConfiguration());
+			builder.ApplyConfiguration<Role>(new RoleConfiguration());
 		}
 	}
 }

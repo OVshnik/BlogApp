@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BlogApp.Data.Models;
 using BlogApp.Services;
-using BlogApp.ViewModels.Articles;
+using BlogApp.ViewModels.ArticlesTags;
 using BlogApp.ViewModels.Comments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

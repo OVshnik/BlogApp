@@ -23,7 +23,7 @@ namespace BlogApp.Controllers
 		public IActionResult Register()
 		{
 			var model = new RegisterViewModel();
-			return Ok(model);
+			return View("Register",model);
 		}
 		[Route("Register")]
 		[HttpPost]
@@ -36,7 +36,7 @@ namespace BlogApp.Controllers
 				if (result.Succeeded)
 				{
 					await _signInManager.SignInAsync(user, false);
-					return Ok(result.Succeeded);
+					return RedirectToAction("Index", "Home");
 				}
 				else
 				{
@@ -56,7 +56,7 @@ namespace BlogApp.Controllers
 					}
 				}
 			}
-			return Ok("User did not register");
+			return View("Register");
 		}
 	}
 }
