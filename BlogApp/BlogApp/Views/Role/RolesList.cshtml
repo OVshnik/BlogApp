@@ -1,7 +1,8 @@
-﻿@{
+﻿@using BlogApp.ViewModels.UsersRoles.Roles
+@{
 	ViewData["Title"] = "RolesList";
 }
-@model BlogApp.ViewModels.Roles.ListRolesViewModel
+@model ListRolesViewModel
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="css/bootstrap.css">
@@ -12,7 +13,7 @@
 		@foreach(var role in Model.Roles)
 		{
 			<div class="list-group-flush">
-				<div class="list-group-flush">@role.Name</div>
+				<div class="list-group-flush">@role.Role.Name</div>
 			</div>
 		}
 	}

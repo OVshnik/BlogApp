@@ -2,6 +2,7 @@
 using BlogApp.Data.UOW;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
@@ -31,9 +32,8 @@ namespace BlogApp.Services
 		}
 		public async Task<List<User>> GetAllUsersAsync()
 		{
-			var userList = _userManager.Users.AsEnumerable().OrderBy(x => x.LastName).ToList();
+			return await _userManager.Users.AsQueryable().OrderBy(x => x.LastName).ToListAsync();
 
-			return await Task.Run(() => userList);
 		}
 		public async Task<IdentityResult> UpdateUserAsync(User user)
 		{

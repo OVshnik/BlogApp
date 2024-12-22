@@ -2,7 +2,7 @@
 using BlogApp.Data.Models;
 using BlogApp.Extensions;
 using BlogApp.Services;
-using BlogApp.ViewModels.Users;
+using BlogApp.ViewModels.UsersRoles.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -18,10 +18,12 @@ namespace BlogApp.Controllers
 	{
 		private readonly IMapper _mapper;
 		private readonly UserService _userService;
-		public UserController(UserService userService, IMapper mapper)
+		private readonly RoleManager<Role> _roleManager;
+		public UserController(UserService userService, IMapper mapper, RoleManager<Role> roleManager)
 		{
 			_userService = userService;
 			_mapper = mapper;
+			_roleManager = roleManager;
 		}
 		[Authorize]
 		[HttpGet]
@@ -63,11 +65,15 @@ namespace BlogApp.Controllers
 		{
 			var user = User;
 
+			var roles=_roleManager.Roles.ToList();
+
 			await _userService.GetCurrentUserAsync(user);
 
 			var model=_mapper.Map<UserEditViewModel>(user);
+			ViewData["UserEditModel"] = model;
+			ViewData["Roles"] = roles;
 
-			return Ok(model);
+			return View("EditUser");
 		}
 		[Route("AdminEditUser")]
 		[Authorize("OnlyAdmin")]

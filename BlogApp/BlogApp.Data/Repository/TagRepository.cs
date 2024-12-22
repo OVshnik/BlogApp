@@ -23,7 +23,7 @@ namespace BlogApp.Data.Repository
 		}
 		public async Task<List<Tag>> GetAllTagsByArticleAsync(Article article)
 		{
-			return await Task.Run(() => Set.Include(x => x.Articles).AsEnumerable().Where(x => x.Id == article.Id).ToList());
+			return await Set.Include(x => x.Articles).AsQueryable().Where(x => x.Id == article.Id).ToListAsync();
 		}
 		public async Task<List<Tag>> GetAllTags()
 		{

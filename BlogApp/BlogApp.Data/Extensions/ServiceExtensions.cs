@@ -22,7 +22,7 @@ namespace BlogApp.Data.Extensions
 				 where TEntity : class
 				 where IRepository : class, IRepository<TEntity>
 		{
-			services.AddSingleton<IRepository<TEntity>, IRepository>();
+			services.AddTransient<IRepository<TEntity>, IRepository>();
 
 			return services;
 		}

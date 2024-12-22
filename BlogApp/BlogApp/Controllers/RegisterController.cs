@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using BlogApp.Data.Models;
 using BlogApp.Services;
-using BlogApp.ViewModels.Users;
+using BlogApp.ViewModels.UsersRoles.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogApp.Controllers
 {
-	public class RegisterController : Controller
+    public class RegisterController : Controller
 	{
 		private readonly IMapper _mapper;
 		private readonly UserService _userService;

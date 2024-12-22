@@ -4,7 +4,7 @@ namespace BlogApp.ViewModels.ArticlesTags.Tags
 {
     public class ListTagsViewModel
     {
-        public List<TagViewModel> Tags { get; set; } = [];
-        public List<string> TagsBox { get; set; }
+        public List<TagViewModel> Tags { get; set; } = new List<TagViewModel>();
+        public List<string> TagsBox { get; set; } = [];
     }
 }

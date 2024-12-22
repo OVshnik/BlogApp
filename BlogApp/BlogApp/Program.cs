@@ -24,7 +24,7 @@ internal class Program
 
 		builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-		builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton)
+		builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Transient)
 			.AddUnitOfWork()
 			.AddCustomRepository<Article, ArticleRepository>()
 			.AddCustomRepository<Tag, TagRepository>()
@@ -39,10 +39,10 @@ internal class Program
 			opts.Password.RequireDigit = false;
 		}).AddEntityFrameworkStores<ApplicationDbContext>();
 
-		builder.Services.AddScoped(typeof(UserService));
-		builder.Services.AddScoped(typeof(ArticleService));
-		builder.Services.AddScoped(typeof(CommentService));
-		builder.Services.AddScoped(typeof(TagService));
+		builder.Services.AddTransient(typeof(UserService));
+		builder.Services.AddTransient(typeof(ArticleService));
+		builder.Services.AddTransient(typeof(CommentService));
+		builder.Services.AddTransient(typeof(TagService));
 
 		builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	    .AddCookie(options =>

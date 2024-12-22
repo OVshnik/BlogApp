@@ -1,4 +1,5 @@
 ﻿using BlogApp.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,12 +28,12 @@ namespace BlogApp.Data.Repository
 		}
 		public async Task<List<Comment>> GetAllCommentsByUserAsync(User user)
 		{
-			return await Task.Run(() => Set.AsEnumerable().Where(x => x.CommentMakerId == user.Id).ToList());
+			return await Set.AsQueryable().Where(x => x.CommentMakerId == user.Id).ToListAsync();
 		}
 
 		public async Task<List<Comment>>GetAllCommentsByArticleAsync(Guid id)
 		{
-			return await Task.Run(() => Set.AsEnumerable().Where(x => x.ArticleId == id).ToList());
+			return await Set.AsQueryable().Where(x => x.ArticleId == id).ToListAsync();
 		}
 		public async Task UpdateCommentAsync(Comment updComment)
 		{

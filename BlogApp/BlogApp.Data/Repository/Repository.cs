@@ -34,7 +34,7 @@ namespace BlogApp.Data.Repository
 		}
 		public async Task<List<T>> GetAll()
 		{
-			return await Task.Run(()=>Set.AsQueryable().ToListAsync());
+			return await Set.AsQueryable().ToListAsync();
 		}
 		public async Task Update(T item)
 		{

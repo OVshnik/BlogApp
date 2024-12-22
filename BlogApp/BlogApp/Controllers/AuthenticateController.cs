@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BlogApp.Data.Models;
 using BlogApp.Services;
-using BlogApp.ViewModels.Users;
+using BlogApp.ViewModels.UsersRoles.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace BlogApp.Controllers
 {
-	public class AuthenticateController : Controller
+    public class AuthenticateController : Controller
 	{
 		private readonly IMapper _mapper;
 		private readonly SignInManager<User> _signInManager;

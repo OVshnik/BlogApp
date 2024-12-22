@@ -3,7 +3,7 @@ using BlogApp.Data.Models;
 using BlogApp.ViewModels.ArticlesTags.Articles;
 using BlogApp.ViewModels.ArticlesTags.Tags;
 using BlogApp.ViewModels.Comments;
-using BlogApp.ViewModels.Users;
+using BlogApp.ViewModels.UsersRoles.Users;
 
 namespace BlogApp
 {

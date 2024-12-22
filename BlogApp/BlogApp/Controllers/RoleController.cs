@@ -1,5 +1,4 @@
 ﻿using BlogApp.ViewModels;
-using BlogApp.ViewModels.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +6,10 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Reflection.Metadata;
 using BlogApp.Data.Models;
 using BlogApp.Services;
+using BlogApp.ViewModels.UsersRoles.Roles;
 namespace BlogApp.Controllers
 {
-	public class RoleController : Controller
+    public class RoleController : Controller
 	{
 		private readonly RoleManager<Role> _roleManager;
 		public RoleController(RoleManager<Role> roleManager)
@@ -53,10 +53,12 @@ namespace BlogApp.Controllers
 			var allRoles = _roleManager.Roles.ToList();
 			if (allRoles != null)
 			{
-				var roles = new ListRolesViewModel()
+				var roles = new ListRolesViewModel();
+				foreach (var role in allRoles)
 				{
-					Roles = allRoles
-				};
+					roles.Roles.Add(new RoleViewModel(role));
+				}
+
 				return View("RolesList", roles);
 			}
 			return RedirectToPage("/AddRole");

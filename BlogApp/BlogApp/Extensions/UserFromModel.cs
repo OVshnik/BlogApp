@@ -1,5 +1,5 @@
 ﻿using BlogApp.Data.Models;
-using BlogApp.ViewModels.Users;
+using BlogApp.ViewModels.UsersRoles.Users;
 
 namespace BlogApp.Extensions
 {

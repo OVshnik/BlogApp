@@ -1,41 +1,41 @@
 ﻿@using BlogApp.Data.Models
-@using BlogApp.ViewModels.ArticlesTags
-@using BlogApp.ViewModels.ArticlesTags.Tags
+@using BlogApp.ViewModels.UsersRoles
 @{
-	ViewData["Title"] = "AddArticle";
+	ViewData["Title"] = "EditUser";
 }
-@model ArticleTagViewModel
+@model UserRoleViewModel
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="css/bootstrap.css">
 
 <label for="exampleInputPassword1" class="form-label">Добавление статьи</label>
 
-<form class="frm" method="post" asp-controller="Article" asp-action="CreateArticle">
+
+<form class="frm" method="post" asp-controller="User" asp-action="UpdateUser">
 	<div asp-validation-summary="ModelOnly"></div>
-	@foreach (var tag in Model.ListTags.Tags)
+	@foreach (var role in Model.ListRolesModel.Roles)
 	{
 		<p class="form-check-inline">
-			<input class="form-check-input" id="@tag.Tag.Id" name="ListTags.TagsBox" type="checkbox" checked="@tag.IsChecked" value="@tag.Tag.Name">
-			<label class="form-check-label" for="@tag.Tag.Id">
-				@tag.Tag.Name
+			<input class="form-check-input" id="@role.Role.Id" name="RolesBox" type="checkbox" checked="@role.IsChecked" value="@role.Role.Name">
+			<label class="form-check-label" for="@role.Role.Id">
+				@role.Role.Name
 			</label>
 		</p>
 	}
 	<div>
 		<div class="mb-3">
-			<input asp-for="CreateArticle.Title" class="form-control" />
-			<span  asp-validation-for="CreateArticle.Title" class="text-danger"></span>
+			<input asp-for="UserEditModel.FirstName" class="form-control" />
+			<span asp-validation-for="UserEditModel.FirstName" class="text-danger"></span>
 		</div>
 		<div class="mb-3">
-			<textarea asp-for="CreateArticle.Description" class="form-control">
+			<textarea asp-for="UserEditModel.LastName" class="form-control">
 			</textarea>
-			<span asp-validation-for="CreateArticle.Description" class="text-danger"></span>
+			<span asp-validation-for="UserEditModel.LastName" class="text-danger"></span>
 		</div>
 		<div class="mb-3">
-			<textarea asp-for="CreateArticle.Content" class="form-control">
+			<textarea asp-for="UserEditModel.MiddleName" class="form-control">
 			</textarea>
-			<span asp-validation-for="CreateArticle.Content" class="text-danger"></span>
+			<span asp-validation-for="UserEditModel.MiddleName" class="text-danger"></span>
 		</div>
 	</div>
 	<div>

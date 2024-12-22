@@ -1,5 +1,6 @@
 ﻿using BlogApp.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +23,12 @@ namespace BlogApp.Data.Repository
 		}
 		public async Task<List<Article>> GetAllArticles()
 		{
-			return await Task.Run(() => Set.AsEnumerable().ToList());
+			return await Set.AsQueryable().ToListAsync();
 		}
 		public async Task<List<Article>> GetAllArticlesByAuthorIdAsync(User user)
 		{
-			return await Task.Run(()=> Set.AsEnumerable().Where(x => x.AuthorId == user.Id).ToList());
+			return await Set.AsQueryable().Where(x => x.AuthorId == user.Id).ToListAsync();
+
 		}
 		public async Task UpdateArticleAsync(Article updArticle)
 		{

@@ -33,11 +33,11 @@ namespace BlogApp.Controllers
 
 			var tags = await _tagService.GetAllTagsAsync();
 
+			newArticle.ListTags.Tags = new List<TagViewModel>();
 			foreach (var tag in tags)
 			{
 				newArticle.ListTags.Tags.Add(new TagViewModel(tag));
 			}
-
 			return View("AddArticle", newArticle);
 		}
 		[Authorize]
@@ -47,6 +47,16 @@ namespace BlogApp.Controllers
 		{
 			var currentUser = await _userService.GetCurrentUserAsync(User);
 
+			var tags = await _tagService.GetAllTagsAsync();
+
+			foreach (var tag in model.ListTags.TagsBox)
+			{
+				var result = tags.Where(x => x.Name == tag);
+				foreach (var t in result)
+				{
+					model.ListTags.Tags.Add(new TagViewModel(t));
+				}
+			}
 			if (model != null && currentUser != null)
 			{
 				var article = _mapper.Map<Article>(model.CreateArticle);
@@ -57,7 +67,7 @@ namespace BlogApp.Controllers
 
 				return View("AddArticle");
 			}
-			return View("AddArticle");
+			return RedirectToPage("/ArticleList");
 		}
 		[Authorize]
 		[Route("ArticlesList")]

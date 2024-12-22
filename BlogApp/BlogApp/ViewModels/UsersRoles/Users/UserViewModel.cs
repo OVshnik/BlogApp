@@ -1,6 +1,6 @@
 ﻿using BlogApp.Data.Models;
 
-namespace BlogApp.ViewModels.Users
+namespace BlogApp.ViewModels.UsersRoles.Users
 {
     public class UserViewModel
     {
