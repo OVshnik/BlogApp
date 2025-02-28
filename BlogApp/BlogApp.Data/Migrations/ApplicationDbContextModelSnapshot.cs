@@ -48,22 +48,28 @@ namespace BlogApp.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ViewCounter")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Articles", (string)null);
+                    b.ToTable("Articles");
                 });
 
             modelBuilder.Entity("BlogApp.Data.Models.Comment", b =>
@@ -80,9 +86,10 @@ namespace BlogApp.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -91,7 +98,37 @@ namespace BlogApp.Data.Migrations
 
                     b.HasIndex("CommentMakerId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("BlogApp.Data.Models.Role", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("BlogApp.Data.Models.Tag", b =>
@@ -104,13 +141,9 @@ namespace BlogApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("BlogApp.Data.Models.User", b =>
@@ -139,9 +172,6 @@ namespace BlogApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -153,6 +183,7 @@ namespace BlogApp.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("MiddleName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
@@ -193,42 +224,6 @@ namespace BlogApp.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityRole");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -337,18 +332,6 @@ namespace BlogApp.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BlogApp.Data.Models.Role", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasDiscriminator().HasValue("Role");
-                });
-
             modelBuilder.Entity("ArticleTag", b =>
                 {
                     b.HasOne("BlogApp.Data.Models.Article", null)
@@ -396,7 +379,7 @@ namespace BlogApp.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("BlogApp.Data.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -423,7 +406,7 @@ namespace BlogApp.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("BlogApp.Data.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)

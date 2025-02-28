@@ -1,0 +1,59 @@
+﻿@using BlogApp.ViewModels.Users
+@{
+	ViewData["Title"] = "UserList";
+}
+@model UserListViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">
+
+@if (Model.Users.Count != 0)
+{
+
+	<a class="" method=get asp-area="" asp-controller="Register" asp-action="Register">Добавить пользователя</a>
+	<div>
+		<label class="fs-5">Пользователи</label>
+	</div>
+	var users = new List<UserViewModel>();
+	if (User.IsInRole("Admin"))
+	{
+		users = Model.Users;
+	}
+	else if(User.IsInRole("Moderator"))
+	{
+		users = Model.Users.Where(r => !r.Roles.Contains("Admin") && !r.Roles.Contains("UberAdmin")).ToList();
+	}
+	else 
+	{
+		users = Model.Users.Where(r => !r.Roles.Contains("UberAdmin") && !r.Roles.Contains("Admin") && !r.Roles.Contains("Moderator")).ToList();
+	}
+	@foreach (var user in users)
+	{
+		<div class="card mb-1">
+			<a class="text-decoration-none" method=get asp-area="" asp-controller="User" asp-route-id="@user.User.Id" asp-action="GetUser">
+				<div class="card-text">@user.User.GetFullName()</div>
+			</a>
+			@if (User.IsInRole("Admin"))
+			{
+				<div class="card-text">
+					@if (user.Roles != null)
+					{
+						@foreach (var role in user.Roles)
+						{
+							<span class="badge bg-warning text-light mb-1">@role</span>
+						}
+					}
+				</div>
+			}
+			<div class="text-lg-start">@user.User.Email</div>
+		</div>
+	}
+}
+else
+{
+	<div>
+		<label class="fs-5">Пользователей пока нет</label>
+	</div>
+	<a class="" method=get asp-area="" asp-controller="Register" asp-action="Register">Добавить пользователя</a>
+}
+

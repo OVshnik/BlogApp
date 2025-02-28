@@ -1,0 +1,41 @@
+﻿@using BlogApp.ViewModels.Tags
+@{
+	ViewData["Title"] = "TagPage";
+}
+@model TagViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">
+<div class="form">
+	<label class="form-text">Название:</label>
+	<div>
+		<span class="badge bg-info text-dark mb-1">@Model.Name</span>
+	</div>
+	@if (Model.Articles.Count != 0)
+	{
+		<label class="form-text">Статьи с тегом @Model.Name:</label>
+		@foreach (var article in Model.Articles)
+		{
+			<div>
+				<a class="" method=get asp-area="" asp-controller="Article" asp-route-id="@article.Id" asp-action="GetArticle">
+				<span class="badge bg-warning text-dark mb-1"> @article.Title</span>
+				</a>
+			</div>
+		}
+	}
+</div>
+@if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+{
+	<div class="d-lg-inline-flex">
+		<form method=post asp-area="" asp-route-id="@Model.Id" asp-controller="Tag" asp-action="EditTag">
+			<button class="btn btn-primary m-1" type="submit">
+				Редактировать
+			</button>
+		</form>
+		<form method=post asp-area="" asp-route-id="@Model.Id" asp-controller="Tag" asp-action="DeleteTag">
+			<button class="btn btn-primary m-1" type="submit">
+				Удалить
+			</button>
+		</form>
+	</div>
+}

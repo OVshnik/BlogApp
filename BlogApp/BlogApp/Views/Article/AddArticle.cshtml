@@ -1,49 +1,57 @@
 ﻿@using BlogApp.Data.Models
-@using BlogApp.ViewModels.ArticlesTags
-@using BlogApp.ViewModels.ArticlesTags.Tags
+@using BlogApp.ViewModels.Articles
 @{
 	ViewData["Title"] = "AddArticle";
 }
-@model ArticleTagViewModel
+@model CreateArticleViewModel
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="css/bootstrap.css">
 
-<label for="exampleInputPassword1" class="form-label">Добавление статьи</label>
+<label class="fs-5">Добавление статьи</label>
 
 <form class="frm" method="post" asp-controller="Article" asp-action="CreateArticle">
 	<div asp-validation-summary="ModelOnly"></div>
-	@foreach (var tag in Model.ListTags.Tags)
-	{
-		<p class="form-check-inline">
-			<input class="form-check-input" id="@tag.Tag.Id" name="ListTags.TagsBox" type="checkbox" checked="@tag.IsChecked" value="@tag.Tag.Name">
-			<label class="form-check-label" for="@tag.Tag.Id">
-				@tag.Tag.Name
-			</label>
-		</p>
-	}
+	<div class="form-check-inline">
+		<table>
+			@if (Model is not null)
+				@for (int i = 0; i < Model.Tags.Count; i++)
+				{
+					<td>
+						@Html.CheckBoxFor(model => model.Tags[i].IsChecked, new { @class = "form-check-input m-1" })
+						<lable class="tag-margin">@Model.Tags[i].Name</lable>
+						@Html.HiddenFor(model => model.Tags[i].Id)
+						@Html.HiddenFor(model => model.Tags[i].Name)
+					</td>
+				}
+				@Html.HiddenFor(model => model.AuthorId)
+		</table>
+	</div>
 	<div>
-		<div class="mb-3">
-			<input asp-for="CreateArticle.Title" class="form-control" />
-			<span  asp-validation-for="CreateArticle.Title" class="text-danger"></span>
-		</div>
-		<div class="mb-3">
-			<textarea asp-for="CreateArticle.Description" class="form-control">
+		<label class="form-label">
+			<a class="" asp-area="" asp-controller="Tag" asp-action="CreateTag">Добавить новый тег</a>
+		</label>
+	</div>
+	<div class="mb-3">
+		<input asp-for="Title" class="form-control" />
+		<span asp-validation-for="Title" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<textarea asp-for="Description" class="form-control">
 			</textarea>
-			<span asp-validation-for="CreateArticle.Description" class="text-danger"></span>
-		</div>
-		<div class="mb-3">
-			<textarea asp-for="CreateArticle.Content" class="form-control">
+		<span asp-validation-for="Description" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<textarea asp-for="Content" class="form-control">
 			</textarea>
-			<span asp-validation-for="CreateArticle.Content" class="text-danger"></span>
-		</div>
+		<span asp-validation-for="Content" class="text-danger"></span>
 	</div>
 	<div>
 		<input class="btn btn-primary" type="submit" value="Добавить" />
 	</div>
 </form>
 <div>
-	<label for="exampleInputPassword1" class="form-label">
+	<label class="form-label">
 		<a class="" asp-area="" asp-controller="Article" asp-action="GetAllRoles">Перейти к списку всех статей</a>
 	</label>
 </div>

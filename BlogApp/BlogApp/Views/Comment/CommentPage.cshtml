@@ -1,0 +1,40 @@
+﻿@using BlogApp.ViewModels.Comments
+@{
+	ViewData["Title"] = "CommentPage";
+}
+@model CommentViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">
+
+<div class="form">
+	<div>
+		<span class="badge bg-info text-dark mb-1">@Model.Comment.Article.Title</span>
+	</div>
+	<label class="fw-bolder">Пользователь</label>
+	<div>
+		<label class="form-check-label mb-1">@Model.Comment.CommentMaker.GetFullName()</label>
+	</div> 
+	<label class="fw-bolder">Комментарий</label>
+	<div>
+		<label class="form-check-text mb-1">@Model.Comment.Content</label>
+	</div>
+	<div>
+		<label class="form-check-label align-content-end" style="color:gray">@Model.Comment.Created.</label>
+	</div>
+</div>
+@if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+{
+	<div class="d-lg-inline-flex">
+		<form method=post asp-area="" asp-route-id="@Model.Comment.Id" asp-controller="Comment" asp-action="EditComment">
+			<button class="btn btn-primary m-1" type="submit">
+				Редактировать
+			</button>
+		</form>
+		<form method=post asp-area="" asp-route-id="@Model.Comment.Id" asp-controller="Comment" asp-action="DeleteComment">
+			<button class="btn btn-primary m-1" type="submit">
+				Удалить
+			</button>
+		</form>
+	</div>
+}

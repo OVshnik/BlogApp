@@ -1,170 +1,119 @@
 ﻿using AutoMapper;
 using BlogApp.Data.Models;
 using BlogApp.Services;
-using BlogApp.ViewModels.ArticlesTags;
+using BlogApp.ViewModels.Articles;
 using BlogApp.ViewModels.Comments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BlogApp.Controllers
 {
-	public class CommentController : Controller
+    public class CommentController : Controller
 	{
 		private readonly IMapper _mapper;
-		private readonly CommentService _commentService;
-		private readonly UserService _userService;
+		private readonly ICommentService _commentService;
+		private readonly IUserService _userService;
+		private readonly ILogger<CommentController> _logger;
 
-		public CommentController(IMapper mapper, CommentService commentService, UserService userService)
+
+		public CommentController(IMapper mapper, ICommentService commentService, IUserService userService, ILogger<CommentController> logger)
 		{
+			_commentService = commentService;			
 			_mapper = mapper;
-			_commentService = commentService;
+			_logger= logger;
 			_userService = userService;
 		}
-		[Authorize]
-		[HttpGet]
-		[Route("AddComment")]
-		public IActionResult CreateComment(Guid articleId)
-		{
-			var model = new CreateCommentViewModel()
-			{
-				ArticleId = articleId,
-			};
-			return Ok(model);
-		}
+		/// <summary>
+		/// [Post] Метод, добавление комментария
+		/// </summary>
 		[Authorize]
 		[HttpPost]
 		[Route("AddComment")]
-		public async Task<IActionResult> CreateComment(CreateCommentViewModel model)
+		public async Task<IActionResult> CreateComment(ArticleViewModel model)
 		{
-			var currentUser = await _userService.GetCurrentUserAsync(User);
-			if (currentUser != null)
-			{
-				var newComment = _mapper.Map<Comment>(model);
-
-				newComment.CommentMakerId = currentUser.Id;
-
-				await _commentService.CreateNewCommentAsync(newComment);
-
-				return Ok("New comment added");
-			}
-			return Ok("Comment not added");
+			var id= await _commentService.CreateNewCommentAsync(User, model.CreateComment);
+			_logger.LogInformation($"К статье с id={model.Id} добавлен комментарий с id={id}");
+			return RedirectToAction("GetAllArticle", "Article");
 		}
+		/// <summary>
+		/// [Get] Метод, страница с комментарием
+		/// </summary>
 		[Authorize]
 		[HttpGet]
-		[Route("GetComment")]
+		[Route("CommentPage")]
 		public async Task<IActionResult> GetComment(Guid id)
 		{
-			var findComment = await _commentService.GetCommentByIdAsync(id);
-			if (findComment != null)
-			{
-				var comment = _mapper.Map<CommentViewModel>(findComment);
-
-				return Ok(comment);
-			}
-			return Ok();
+			var model=await _commentService.GetCommentAsync(id);
+			return View("CommentPage",model);
 		}
+		/// <summary>
+		/// [Get] Метод, список комментариев
+		/// </summary>
 		[Authorize]
 		[HttpGet]
-		[Route("GetCommentsByArticle")]
-		public async Task<IActionResult> GetCommentsByArticle(Guid articleId)
+		[Route("CommentsList")]
+		public async Task<IActionResult> GetAllComments()
 		{
-			var result = new CommentListViewModel();
-
-			var comments = await _commentService.GetCommentsByArticleAsync(articleId);
-
-			if (comments != null)
-			{
-				result.Comments.AddRange(comments);
-
-				return Ok(result);
-			}
-			return Ok();
+			var model=await _commentService.GetAllCommentsAsync();
+			return View("CommentsList",model);
 		}
+		/// <summary>
+		/// [Post] Метод, редактирования комментария
+		/// </summary>
 		[Authorize]
-		[HttpGet]
-		[Route("GetCommentsByUser")]
-		public async Task<IActionResult> GetCommentsByUser()
-		{
-			var currentUser = await _userService.GetCurrentUserAsync(User);
-
-			var result = new CommentListViewModel();
-
-			var comments = await _commentService.GetCommentByUserAsync(currentUser);
-
-			if (comments != null)
-			{
-				result.Comments.AddRange(comments);
-
-				return Ok(comments);
-			}
-			return Ok();
-		}
-		[Authorize]
-		[HttpGet]
+		[HttpPost]
 		[Route("EditComment")]
-		public async Task<IActionResult> ChangeComment(Guid id)
+		public async Task<IActionResult> EditComment(Guid id)
 		{
-			var comment = await _commentService.GetCommentByIdAsync(id);
-			if (comment != null)
-			{
-				var editModel = _mapper.Map<EditCommentViewModel>(comment);
-
-				if (User.IsInRole("User"))
-				{
-					var user = await _userService.GetCurrentUserAsync(User);
-					if (user.Id == comment.CommentMakerId)
-					{
-						return Ok(editModel);
-					}
-					return Ok();
-				}
-				else
-				{
-					return Ok(editModel);
-				}
-			}
-			return Ok();
+			var model=await _commentService.EditComment(id);
+			return View(model);
 		}
+		/// <summary>
+		/// [Post] Метод, обновление комментария
+		/// </summary>
 		[Authorize]
 		[HttpPost]
 		[Route("UpdateComment")]
 		public async Task<IActionResult> UpdateComment(EditCommentViewModel model)
 		{
-			var comment = await _commentService.GetCommentByIdAsync(model.Id);
-			if (comment != null)
+			if (ModelState.IsValid)
 			{
-				comment.Content = model.Content;
-				await _commentService.UpdateCommentAsync(comment);
+				await _commentService.UpdateCommentAsync(model);
+				_logger.LogDebug($"Комментарий с id={model.Id} изменен");
+				return RedirectToAction("GetAllComments");
 			}
-			return Ok();
+			else
+			{
+				ModelState.AddModelError("", "Некорректные значения");
+				string errorMessages = "";
+				foreach (var item in ModelState)
+				{
+					if (item.Value.ValidationState == ModelValidationState.Invalid)
+					{
+						errorMessages = $"{errorMessages}\nОшибки для свойства {item.Key}:\n";
+						foreach (var error in item.Value.Errors)
+						{
+							errorMessages = $"{errorMessages}{error.ErrorMessage}\n";
+						}
+					}
+				}
+				return RedirectToAction("EditComment");
+			}
+
 		}
+		/// <summary>
+		/// [Post] Метод, удаление комментария
+		/// </summary>
 		[Authorize]
 		[HttpPost]
 		[Route("DeleteComment")]
 		public async Task<IActionResult> DeleteComment(Guid id)
 		{
-			var comment = await _commentService.GetCommentByIdAsync(id);
-			if (comment != null)
-			{
-
-				if (User.IsInRole("User"))
-				{
-					var user = await _userService.GetCurrentUserAsync(User);
-					if (user.Id == comment.CommentMakerId)
-					{
-						await _commentService.DeleteCommentAsync(comment);
-						return Ok();
-					}
-					return Ok();
-				}
-				else
-				{
-					await _commentService.DeleteCommentAsync(comment);
-					return Ok();
-				}
-			}
-			return Ok();
+			await _commentService.DeleteCommentAsync(id);
+			_logger.LogDebug($"Комментарий с id={id} удален");
+			return RedirectToAction("GetAllComments");
 		}
 	}
 }

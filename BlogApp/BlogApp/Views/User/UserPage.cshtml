@@ -1,8 +1,150 @@
-﻿
+﻿@using BlogApp.Data.Models
+@using BlogApp.ViewModels.Users
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
 @{
-    ViewData["Title"] = "User Page";
+	ViewData["Title"] = "UserPage";
 }
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>User page</p>
-</div>
+@model UserViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.css">
+
+<label class="fs-5">Информация о пользователе</label>
+@if (UserManager.GetUserId(User) == Model.User.Id || User.IsInRole("Admin"))
+{
+	<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.css">
+
+	<div class="card mb-1">
+		<div class="card-body">
+			<div class="border-bottom mb-1">
+				<label class="card-text">ФИО: @Model.User.GetFullName()</label>
+			</div>
+			<div class="border-bottom  mb-1">
+				<label class="card-text">email: @Model.User.Email</label>
+			</div>
+			<div class="border-bottom  mb-1">
+				<label class="card-text">Дата рождения: @Model.User.BirthDate.ToShortDateString()</label>
+			</div>
+
+			@if (Model.Roles.Count != 0)
+			{
+				<div class="d-inline-flex border-bottom">
+			    Роли:
+				@foreach (var role in Model.Roles)
+				{
+					
+						<span class="badge bg-warning text-light m-1">@role</span>
+					
+				}
+				</div>
+			}
+		</div>
+	</div>
+	@if (Model.Articles.Count != 0)
+	{
+		<div>
+			<label class="text p-1">Статьи:</label>
+		</div>
+		<div class="card mb-1">
+			@foreach (var article in Model.Articles)
+			{
+				<div class="align-content-start p-1">
+					<a class="badge bg-success text-light text-decoration-none" method=get asp-area="" asp-route-id="@article.Id" asp-controller="Article" asp-action="GetArticle">
+						@article.Title
+					</a>
+				</div>
+			}
+			@if (UserManager.GetUserId(User) == Model.User.Id)
+			{
+				<div>
+					<a class="btn btn-primary m-1" method=get asp-area="" asp-controller="Article" asp-action="CreateArticle">Добавить</a>
+				</div>
+			}
+		</div>
+	}
+	@if (Model.Comments.Count != 0)
+	{
+		<div>
+			<label class="text p-1">Комментарии:</label>
+		</div>
+		<div class="card mb-1">
+			<div class="card-body">
+				@foreach (var comment in Model.Comments)
+				{
+					<div class="border-bottom">
+						<div class="align-content-start">
+							<a class="badge bg-success text-light text-decoration-none" method=get asp-area="" asp-route-id="@comment.Article.Id" asp-controller="Article" asp-action="GetArticle">
+								@comment.Article.Title
+							</a>
+						</div>
+						<div class="form-text">
+							<label class="form-text" style="color:black; font-size:medium">
+								@comment.Content
+							</label>
+						</div>
+						<div>
+							<label class="align-content-end" style="color:gray">
+								@comment.Created
+							</label>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	}
+	@if (User.IsInRole("Admin"))
+	{
+		<div class="d-inline-flex m-1">
+			<form asp-controller="User" asp-action="AdminEditUser" asp-route-id="@Model.User.Id" method="post">
+				<button type="submit" class="btn btn-primary m-1">
+					Редактировать
+				</button>
+			</form>
+			@if (UserManager.GetUserId(User) != Model.User.Id)
+			{
+				<form asp-controller="User" asp-action="DeleteUser" asp-route-id="@Model.User.Id" method="post">
+					<button type="submit" class="btn btn-primary m-1">
+						Удалить
+					</button>
+				</form>
+			}
+		</div>
+	}
+}
+else
+{
+	<div class="card mb-1">
+		<div class="card-body">
+			<div class="border-bottom mb-1">
+				<label class="card-text">ФИО: @Model.User.GetFullName()</label>
+			</div>
+			<div class="border-bottom  mb-1">
+				<label class="card-text">email: @Model.User.Email</label>
+			</div>
+		</div>
+	</div>
+	@if (Model.Articles.Count>0)
+	{
+		<div>
+			<label class="text p-1">Статьи:</label>
+		</div>
+		<div class="card mb-1">
+			@foreach (var article in Model.Articles)
+			{
+				<div class="align-content-start p-1">
+					<a class="badge bg-success text-light text-decoration-none" method=get asp-area="" asp-route-id="@article.Id" asp-controller="Article" asp-action="GetArticle">
+						@article.Title
+					</a>
+				</div>
+			}
+		</div>
+	}
+	else
+	{
+		<div>
+			<label class="text p-1">У данного пользователя статей пока нет</label>
+		</div>
+	}
+}

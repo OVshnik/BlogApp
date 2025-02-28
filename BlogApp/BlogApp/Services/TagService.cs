@@ -1,40 +1,95 @@
-﻿using BlogApp.Data.Models;
+﻿using AutoMapper;
+using BlogApp.Data.Models;
 using BlogApp.Data.Repository;
-using BlogApp.Data.UOW;
+using BlogApp.Exceptions;
+using BlogApp.ViewModels.Tags;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BlogApp.Services
 {
-	public class TagService
+	public class TagService : ITagService
 	{
-		private TagRepository _tagRepository;
+		private readonly IMapper _mapper;
+		private readonly ITagRepository _tagRepository;
+		private readonly IArticleRepository _articleRepository;
 
-		public TagService(IUnitOfWork unitOfWork)
+		public TagService(ITagRepository tagRepository, IMapper mapper, IArticleRepository articleRepository)
 		{
-			_tagRepository = (TagRepository)unitOfWork.GetRepository<Tag>();
+			_tagRepository = tagRepository;
+			_mapper = mapper;
+			_articleRepository = articleRepository;
 		}
-		public async Task CreateNewTagAsync(Tag newTag)
+		/// <summary>
+		/// Метод для создания тега в БД
+		/// </summary>
+		public async Task<Guid> CreateNewTagAsync(CreateTagViewModel model)
 		{
-			await _tagRepository.AddTagAsync(newTag);
+			var newTag = _mapper.Map<Tag>(model);
+
+			await _tagRepository.CreateTagAsync(newTag);
+			return newTag.Id;
 		}
-		public async Task<Tag> GetTagByIdAsync(Guid id)
+		/// <summary>
+		/// Метод для редактирования тега в БД
+		/// </summary>
+		public async Task<EditTagViewModel> EditTag(Guid id)
 		{
-			return await _tagRepository.GetTagByIdAsync(id);
+			var tag = await _tagRepository.GetTagAsync(id);
+			var model = _mapper.Map<EditTagViewModel>(tag);
+
+			return model;
 		}
-		public async Task<List<Tag>> GetAllTagsAsync()
+		/// <summary>
+		/// Метод для обновления тега в БД
+		/// </summary>
+		public async Task UpdateTagAsync(EditTagViewModel model)
 		{
-			return await _tagRepository.GetAllTags();
+			var tag = await _tagRepository.GetTagAsync(model.Id);
+			if (tag != null)
+			{
+				if (!string.IsNullOrEmpty(model.Name))
+					tag.Name = model.Name;
+				await _tagRepository.UpdateTagAsync(tag);
+			}
 		}
-		public async Task<List<Tag>> GetAllTagByArticleIdAsync(Article article)
+		/// <summary>
+		/// Метод для получения тега из БД
+		/// </summary>
+		public async Task<TagViewModel> GetTagAsync(Guid id)
 		{
-			return await _tagRepository.GetAllTagsByArticleAsync(article);
+			var findTag = await _tagRepository.GetTagAsync(id);
+			if (findTag != null)
+			{
+				var tag = _mapper.Map<TagViewModel>(findTag);
+				return tag;
+			}
+			throw new ModelNotFoundException($"Тег с id={id} не удалось получить из БД");
 		}
-		public async Task UpdateTagAsync(Tag updTag)
+		/// <summary>
+		/// Метод для получения всех тегов из БД
+		/// </summary>
+		public async Task<ListTagsViewModel> GetAllTagsAsync()
 		{
-			await _tagRepository.UpdateTag(updTag);
+			var findTags = await _tagRepository.GetAllTagsAsync();
+			var tags = new ListTagsViewModel();
+			if (findTags != null)
+			{
+				foreach (var tag in findTags)
+				{
+					var model = _mapper.Map<TagViewModel>(tag);
+					tags.Tags.Add(model);
+				}
+				return tags;
+			}
+			return tags;
 		}
-		public async Task DeleteTagAsync(Tag tag)
+		/// <summary>
+		/// Метод для удаления тега из БД
+		/// </summary>
+		public async Task DeleteTagAsync(Guid id)
 		{
-			await _tagRepository.DeleteTagAsync(tag);
+			await _tagRepository.DeleteTagAsync(id);
 		}
 	}
 }

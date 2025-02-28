@@ -11,13 +11,10 @@ namespace BlogApp.Data.Models
 	{
 		public string FirstName { get; set; } = String.Empty;
 		public string LastName { get; set; } = String.Empty;
-		public string? MiddleName { get; set; }
+		public string MiddleName { get; set; } = String.Empty;
 		public DateTime BirthDate { get; set; }
-		public string? Image { get; set; }
-
-		public List<Article> ?Articles { get; set; }
-
-		public List<Comment> ?Comments { get; set; }
+		public List<Article> Articles { get; set; }= new List<Article>();
+		public List<Comment> Comments { get; set; } = new List<Comment>();
 		public string GetFullName()
 		{
 			return FirstName + " " + MiddleName + " " + LastName;

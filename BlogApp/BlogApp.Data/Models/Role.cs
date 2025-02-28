@@ -10,6 +10,6 @@ namespace BlogApp.Data.Models
 {
 	public class Role : IdentityRole
 	{
-		public string ?Description { get; set; }
+		public string Description { get; set; } = "";
 	}
 }

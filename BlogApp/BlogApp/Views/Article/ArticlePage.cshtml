@@ -1,0 +1,120 @@
+﻿@using BlogApp.Data.Models
+@using BlogApp.ViewModels.Articles
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@inject SignInManager<User> SignInManager
+@{
+	ViewData["Title"] = "ArticlePage";
+}
+@model ArticleViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.css">
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+<a class="" method=get asp-area="" asp-controller="Article" asp-action="CreateArticle">Добавить статью</a>
+
+<div class="border-bottom mb-1">
+	<div>
+		<label class="fs-5 mb-1 fw-bolder">@Model.Title</label>
+	</div>
+	<div>
+		<label class="card-text fst-italic">@Model.Description</label>
+	</div>
+	<div class="d-inline-flex ">
+		@if (Model.Tags.Count != 0)
+		{
+			@foreach (var tag in Model.Tags)
+			{
+				<div class="m-1">
+					<span class="badge bg-info text-dark"> @tag.Name</span>
+				</div>
+			}
+		}
+	</div>
+</div>
+<div class="border-bottom mb-1">
+	<div>
+		<label class="text-black ">
+			@Model.Content
+		</label>
+	</div>
+	<div class="mb-1">
+		@if (Model.Author != null)
+		{
+			<div>
+				<label class="text-end" style="color:gray">
+					@Model.Author.GetFullName()
+				</label>
+				<div />
+				<div>
+					<label class="text-end" style="color:gray">
+						@Model.Author.Email
+					</label>
+					<div />
+
+				</div>
+			</div>
+		}
+		@if (Model.Comments.Count != 0)
+		{
+			<div>
+				<label class="form-label font-weight-bolder">Комментарии:</label>
+			</div>
+			<div class="card mb-1">
+				@foreach (var comment in Model.Comments)
+				{
+					<div class="form-text mb-1">
+						<label class="card-text">
+							@comment.Content
+						</label>
+					</div>
+					<div class="align-content-end mb-1">
+						<span class="badge bg-success text-light">
+							@if (comment.CommentMaker != null)
+								@comment.CommentMaker.Email
+						</span>
+					</div>
+				}
+			</div>
+		}
+		@{
+			var user = await UserManager.GetUserAsync(User);
+			if (user != null)
+				@if (User.IsInRole("Admin") || user.Id == Model.AuthorId)
+				{
+					<div class="d-inline-flex mb-1">
+						<form asp-controller="Article" asp-action="EditArticle" asp-route-id="@Model.Id" method="post">
+							<button type="submit" class="btn btn-primary m-1">
+								Редактировать
+							</button>
+						</form>
+						<form asp-controller="Article" asp-action="DeleteArticle" asp-route-id="@Model.Id" method="post">
+							<button type="submit" class="btn btn-primary m-1">
+								Удалить
+							</button>
+						</form>
+					</div>
+				}
+		}
+		<form class="frm" method="post" asp-controller="Comment" asp-action="CreateComment">
+			<div asp-validation-summary="ModelOnly"></div>
+			<div class="mb-1">
+				<input asp-for="CreateComment.Content" class="form-control" />
+				<span asp-validation-for="CreateComment.Content" class="text-danger"></span>
+				<input asp-for="CreateComment.ArticleId" hidden />
+				<input asp-for="Id" hidden />
+				<input asp-for="AuthorId" hidden />
+				<input asp-for="Title" hidden />
+				<input asp-for="Description" hidden />
+				<input asp-for="Created" hidden />
+				<input asp-for="Tags" hidden />
+				<input asp-for="Comments" hidden />
+				<input asp-for="Author" hidden />
+			</div>
+			<div>
+				<input class="btn btn-primary m-1" type="submit" value="Оставить комментарий" />
+			</div>
+		</form>

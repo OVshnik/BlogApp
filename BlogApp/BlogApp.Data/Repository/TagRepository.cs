@@ -1,4 +1,5 @@
 ﻿using BlogApp.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,40 +7,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace BlogApp.Data.Repository
 {
-	public class TagRepository : Repository<Tag>
+	public class TagRepository : ITagRepository
 	{
-		public TagRepository(ApplicationDbContext context) : base(context)
-		{ }
-		public async Task AddTagAsync(Tag tag)
+		private ApplicationDbContext _context;
+		public TagRepository(ApplicationDbContext db)
 		{
-			await Create(tag);
+			_context = db;
 		}
-		public async Task<Tag> GetTagByIdAsync(Guid id)
+		public async Task CreateTagAsync(Tag tag)
 		{
-			return await Get(id);
+			_context.Tags.Add(tag);
+			await _context.SaveChangesAsync();
 		}
-		public async Task<List<Tag>> GetAllTagsByArticleAsync(Article article)
+		public async Task<Tag?> GetTagAsync(Guid id)
 		{
-			return await Set.Include(x => x.Articles).AsQueryable().Where(x => x.Id == article.Id).ToListAsync();
+			return await _context.Tags.Include(x=>x.Articles).FirstOrDefaultAsync(x => x.Id == id);
 		}
-		public async Task<List<Tag>> GetAllTags()
+		public async Task<List<Tag>> GetAllTagsAsync()
 		{
-			return await GetAll();
+			return await _context.Tags.Include(x => x.Articles).ToListAsync();
 		}
-		public async Task UpdateTag(Tag updTag)
+		public async Task UpdateTagAsync(Tag updTag)
 		{
-			var tag = Set.AsEnumerable().Where(x => x.Id == updTag.Id).FirstOrDefault();
+			_context.Update(updTag);
+			await _context.SaveChangesAsync();
+		}
+		public async Task DeleteTagAsync(Guid id)
+		{
+			var tag = await GetTagAsync(id);
 			if (tag != null)
-				await Update(tag);
-		}
-		public async Task DeleteTagAsync(Tag delTag)
-		{
-			var tag = Set.AsEnumerable().FirstOrDefault(x => x.Id == delTag.Id);
-			if (tag != null)
-				await Delete(tag);
+			{
+				_context.Remove(tag);
+			}
+			await _context.SaveChangesAsync();
 		}
 	}
 }

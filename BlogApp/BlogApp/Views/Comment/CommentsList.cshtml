@@ -1,0 +1,45 @@
+﻿@using BlogApp.ViewModels.Comments
+@{
+	ViewData["Title"] = "CommentsList";
+}
+@model CommentListViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">
+
+<div class="list-group back-white fr-block">
+	@if (Model.Comments.Count != 0)
+	{
+		<label class="fs-5">Все комментарии</label>
+		<div class="mb-1">
+			<a class="" method=get asp-area="" asp-controller="Article" asp-action="GetAllArticle">Перейти к списку статей, чтобы добавить добавить комментарий</a>
+		</div>
+		@foreach (var article in Model.Articles)
+		{
+			<div>
+				<span class="badge bg-success text-dark mb-1">@article.Title</span>
+			</div>
+			@foreach (var comment in Model.Comments)
+			{
+				if (comment.ArticleId == article.Id)
+				{
+					<div>
+						<div class="card mb-1">
+						<a class="text-decoration-none mb-1" method=get asp-area="" asp-controller="Comment" asp-route-id="@comment.Id" asp-action="GetComment">
+							<label class="form-text">@comment.Content</label>
+						</a>
+					</div>
+				</div>
+				}
+			}
+
+		}
+	}
+	else
+	{
+		<div>
+			<label class="fw-bold fs-5">Комментариев пока нет</label>
+		</div>
+		<a class="" method=get asp-area="" asp-controller="Article" asp-action="GetAllArticle">Перейти к списку статей, чтобы оставить комментарий</a>
+	}
+</div>

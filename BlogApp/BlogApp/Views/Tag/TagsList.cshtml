@@ -1,21 +1,35 @@
-﻿@using BlogApp.ViewModels.ArticlesTags.Tags
+﻿@using BlogApp.ViewModels.Tags
 @{
 	ViewData["Title"] = "TagsList";
 }
 @model ListTagsViewModel
 
-<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="css/bootstrap.css">
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">
 
-<div class="form-control back-white fr-block">
-	@if(Model.Tags.Count!=0)
+
+@if (Model.Tags.Count != 0)
+{
+	<label class="fs-5">Все теги</label>
+	<div>
+	<a class="" method=get asp-area="" asp-controller="Tag" asp-action="CreateTag">Добавить тег</a>
+	</div>
+	@foreach (var tag in Model.Tags)
 	{
-		@foreach(var tag in Model.Tags)
-		{
-			<div class="list-group-flush">
-				<div class="list-group-flush">@tag.Tag.Name</div>
-			</div>
-		}
+		<div class="card mb-1">
+			<a class="" method=get asp-area="" asp-controller="Tag" asp-route-id="@tag.Id" asp-action="GetTag">
+				<span class="badge bg-info text-dark mb-1">@tag.Name</span>
+			</a>
+			<div style="color:darkgray; align-content:end" class="text-end">Статей по тегу: @tag.Articles.Count</div>
+		</div>
+
 	}
-</div>
-<a class="" method=get asp-area="" asp-controller="Tag" asp-action="CreateTag">Добавить тег</a>
+}
+else
+{
+	<div>
+		<label class="fw-bold fs-5">Тегов пока нет</label>
+	</div>
+	<a class="" method=get asp-area="" asp-controller="Tag" asp-action="CreateTag">Добавить тег</a>
+}
+

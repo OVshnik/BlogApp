@@ -2,62 +2,70 @@
 using BlogApp.Data.Models;
 using BlogApp.Extensions;
 using BlogApp.Services;
-using BlogApp.ViewModels.UsersRoles.Users;
+using BlogApp.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Identity.Client;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BlogApp.Controllers
 {
     public class UserController : Controller
 	{
 		private readonly IMapper _mapper;
-		private readonly UserService _userService;
+		private readonly IUserService _userService;
 		private readonly RoleManager<Role> _roleManager;
-		public UserController(UserService userService, IMapper mapper, RoleManager<Role> roleManager)
+		private readonly ILogger<UserController> _logger;
+		public UserController(IUserService userService, IMapper mapper, RoleManager<Role> roleManager, ILogger<UserController> logger)
 		{
 			_userService = userService;
 			_mapper = mapper;
 			_roleManager = roleManager;
+			_logger = logger;
 		}
+		/// <summary>
+		/// [Get] Метод, страница пользователя
+		/// </summary>
 		[Authorize]
+        [Route("MyPage")]
+        [HttpGet]
+        public async Task<IActionResult> MyPage()
+        {
+			var model =await _userService.GetCurrentUserAsync(User);
+
+            return View("UserPage", model);
+        }
+		/// <summary>
+		/// [Get] Метод, страница пользователя
+		/// </summary>
+		[Authorize]
+		[Route("UserPage")]
 		[HttpGet]
-		public IActionResult UserPage()
+		public async Task<IActionResult> GetUser(string id)
 		{
-			return View();
+		    var model=await _userService.GetUserAsync(id);
+
+			return View("UserPage",model);
 		}
-		[Authorize("OnlyForAdmin")]
-		[Route("GetUser")]
-		[HttpGet]
-		public async Task<IActionResult> GetUsersById(string id)
-		{
-			var user=await _userService.GetUserByIdAsync(id);
-            if (user!=null)
-            {
-				var model = _mapper.Map<UserViewModel>(user);
-				return Ok(model);
-			}
-			return Ok("User not found");
-		}
-		[Authorize("OnlyForAdmin")]
-		[Route("GetUsers")]
+		/// <summary>
+		/// [Get] Метод, список всех пользователей
+		/// </summary>
+		[Authorize]
+		[Route("UserList")]
 		[HttpGet]
 		public async Task<IActionResult>GetAllUsers()
 		{
-			var users = await _userService.GetAllUsersAsync();
-			var userList = new List<UserViewModel>();
-			foreach (var user in users)
-			{
-				var mapUser=_mapper.Map<UserViewModel>(user);
-				userList.Add(mapUser);
-			}
-			return Ok(userList);
+			var users=await _userService.GetAllUsersAsync();
+			return View("UserList",users);
 		}
+		/// <summary>
+		/// [Get] Метод, редактирование пользователя
+		/// </summary>
 		[Route("EditUser")]
 		[Authorize]
 		[HttpGet]
@@ -65,38 +73,40 @@ namespace BlogApp.Controllers
 		{
 			var user = User;
 
-			var roles=_roleManager.Roles.ToList();
+			var model=await _userService.EditUser(user);
 
-			await _userService.GetCurrentUserAsync(user);
-
-			var model=_mapper.Map<UserEditViewModel>(user);
-			ViewData["UserEditModel"] = model;
-			ViewData["Roles"] = roles;
-
-			return View("EditUser");
+			return View("EditUser", model);
 		}
+		/// <summary>
+		/// [Get] Метод, редактирование пользователя (только для администратора)
+		/// </summary>
 		[Route("AdminEditUser")]
 		[Authorize("OnlyAdmin")]
-		[HttpGet]
-		public async Task<IActionResult> EditUser(string id)
+		[HttpPost]
+		public async Task<IActionResult> AdminEditUser(string id)
 		{
-			var user=await _userService.GetUserByIdAsync(id);
+			var model = await _userService.EditUser(id);
 
-			var model = _mapper.Map<UserEditViewModel>(user);
-
-			return Ok(model);
+			return View("EditUser", model);
 		}
+		/// <summary>
+		/// [Post] Метод, обновление данных пользователя
+		/// </summary>
 		[Route("UpdateUser")]
 		[Authorize]
-		[HttpGet]
-		public async Task<IActionResult>UpdateUser(UserEditViewModel? model)
+		[HttpPost]
+		public async Task<IActionResult>UpdateUser(UserEditViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
-				var user = await _userService.GetUserByIdAsync(model.UserId);
-				user.Convert(model);
-				await _userService.UpdateUserAsync(user);
-				return Ok("User successfully updated");
+				var result = await _userService.UpdateUserAsync(model);
+				if (result.Succeeded)
+				{
+					_logger.LogDebug($"У пользователя с логином {model.Email} изменены данные");
+					return RedirectToAction("GetAllUsers");
+				}
+				else
+					return RedirectToAction("EditUser");
 			}
 			else
 			{
@@ -113,16 +123,22 @@ namespace BlogApp.Controllers
 						}
 					}
 				}
-				return Ok("One or more input values is invalid");
+				return RedirectToAction("EditUser");
 			}
 		}
+		/// <summary>
+		/// [Post] Метод, удаление пользователя
+		/// </summary>
 		[Authorize("OnlyAdmin")]
 		[Route("DeleteUser")]
 		[HttpPost]
 		public async Task<IActionResult> DeleteUser(string id)
 		{
-			await _userService.DeleteUserAsync(id);
-			return Ok("User has been deleted");
+			var user=await _userService.GetUserAsync(id);
+            await _userService.DeleteUserAsync(id);
+
+			_logger.LogDebug($"Пользователь {user.User.Email} удален");
+			return View("UserList");
 		}
 	}
 }

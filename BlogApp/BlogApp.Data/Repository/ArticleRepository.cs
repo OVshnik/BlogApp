@@ -9,38 +9,39 @@ using System.Threading.Tasks;
 
 namespace BlogApp.Data.Repository
 {
-	public class ArticleRepository : Repository<Article>
+	public class ArticleRepository : IArticleRepository
 	{
-		public ArticleRepository(ApplicationDbContext db) : base(db)
-		{ }
-		public async Task AddArticleAsync(Article article)
+		private ApplicationDbContext _context;
+		public ArticleRepository(ApplicationDbContext db)
 		{
-			await Create(article);
+			_context = db;
 		}
-		public async Task<Article> GetArticleByIdAsync(Guid id)
+		public async Task CreateArticleAsync(Article article)
 		{
-				return await Get(id);
+			_context.Articles.Add(article);
+			await _context.SaveChangesAsync();
 		}
-		public async Task<List<Article>> GetAllArticles()
+		public async Task<Article?> GetArticleAsync(Guid id)
 		{
-			return await Set.AsQueryable().ToListAsync();
+			return await _context.Articles.Include(a => a.Tags).Include(a => a.Comments).Where(x=>x.Id==id).FirstOrDefaultAsync();
 		}
-		public async Task<List<Article>> GetAllArticlesByAuthorIdAsync(User user)
+		public async Task<List<Article>> GetAllArticlesAsync()
 		{
-			return await Set.AsQueryable().Where(x => x.AuthorId == user.Id).ToListAsync();
-
+			return await _context.Articles.Include(x => x.Tags).ToListAsync();
 		}
 		public async Task UpdateArticleAsync(Article updArticle)
 		{
-			var article = Set.AsEnumerable().Where(x=>x.Id== updArticle.Id).FirstOrDefault();
-			if (article != null)
-			await Update(article);
+			_context.Update(updArticle);
+			await _context.SaveChangesAsync();
 		}
-		public async Task DeleteArticleAsync(Article delArticle)
+		public async Task DeleteArticleAsync(Guid id)
 		{
-			var article = Set.AsEnumerable().FirstOrDefault(x => x.Id == delArticle.Id);
+			var article = await GetArticleAsync(id);
 			if (article != null)
-				await Delete(article);
+			{
+				_context.Remove(article);
+			}
+			await _context.SaveChangesAsync();
 		}
 	}
 }

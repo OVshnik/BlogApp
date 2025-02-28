@@ -36,6 +36,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Moment.js" Version="2.30.1" />
+    <PackageReference Include="NLog" Version="5.4.0" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.4.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,11 +45,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Article\EditArticle.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Views\Role\RolesList.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Update="Views\Tag\TagsList.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\User\UserList.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\css\special.css">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

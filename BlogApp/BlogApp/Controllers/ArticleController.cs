@@ -1,74 +1,64 @@
 ﻿using AutoMapper;
 using BlogApp.Data.Models;
 using BlogApp.Services;
-using BlogApp.ViewModels.ArticlesTags.Articles;
-using BlogApp.ViewModels.ArticlesTags;
+using BlogApp.ViewModels.Articles;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using BlogApp.ViewModels.ArticlesTags.Tags;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BlogApp.Controllers
 {
-	public class ArticleController : Controller
+    public class ArticleController : Controller
 	{
 		private readonly IMapper _mapper;
-		private readonly ArticleService _articleService;
-		private readonly UserService _userService;
-		private readonly TagService _tagService;
-		public ArticleController(IMapper mapper, ArticleService articleService, UserService userService, TagService tagService)
+		private readonly IArticleService _articleService;
+		private readonly IUserService _userService;
+		private readonly ITagService _tagService;
+		private readonly UserManager<User> _userManager;
+		public ArticleController(IMapper mapper, IArticleService articleService, IUserService userService, ITagService tagService, UserManager<User> userManager)
 		{
 			_mapper = mapper;
 			_articleService = articleService;
 			_userService = userService;
 			_tagService = tagService;
+			_userManager = userManager;
 		}
+		/// <summary>
+		/// [Get] Метод, добавление статьи
+		/// </summary>
 		[Authorize]
 		[Route("AddArticle")]
 		[HttpGet]
 		public async Task<IActionResult> CreateArticle()
 		{
-			var newArticle = new ArticleTagViewModel();
-
-			var tags = await _tagService.GetAllTagsAsync();
-
-			newArticle.ListTags.Tags = new List<TagViewModel>();
-			foreach (var tag in tags)
+			var user = User;
+			if (user != null)
 			{
-				newArticle.ListTags.Tags.Add(new TagViewModel(tag));
+				var model = await _articleService.CreateNewArticleAsync(user);
+				return View("AddArticle", model);
 			}
-			return View("AddArticle", newArticle);
+			return RedirectToPage("/Login");
 		}
+		/// <summary>
+		/// [Post] Метод, добавление статьи
+		/// </summary>
 		[Authorize]
 		[Route("AddArticle")]
 		[HttpPost]
-		public async Task<IActionResult> CreateArticle(ArticleTagViewModel model)
+		public async Task<IActionResult> CreateArticle(CreateArticleViewModel model)
 		{
-			var currentUser = await _userService.GetCurrentUserAsync(User);
-
-			var tags = await _tagService.GetAllTagsAsync();
-
-			foreach (var tag in model.ListTags.TagsBox)
+			if (model != null)
 			{
-				var result = tags.Where(x => x.Name == tag);
-				foreach (var t in result)
-				{
-					model.ListTags.Tags.Add(new TagViewModel(t));
-				}
+				var AddArticleId = await _articleService.CreateNewArticleAsync(model);
+
+				return RedirectToAction("GetAllArticle");
 			}
-			if (model != null && currentUser != null)
-			{
-				var article = _mapper.Map<Article>(model.CreateArticle);
-
-				article.AuthorId = currentUser.Id;
-
-				await _articleService.CreateNewArticleAsync(article);
-
-				return View("AddArticle");
-			}
-			return RedirectToPage("/ArticleList");
+			return RedirectToAction("CreateArticle");
 		}
+		/// <summary>
+		/// [Get] Метод, список статей
+		/// </summary>
 		[Authorize]
 		[Route("ArticlesList")]
 		[HttpGet]
@@ -77,119 +67,75 @@ namespace BlogApp.Controllers
 			var articles = await _articleService.GetAllArticlesAsync();
 			if (articles != null)
 			{
-				var articleList = new ArticleListViewModel();
-
-				articleList.Articles.AddRange(articles);
-
-				//var result = articleList.Articles.OrderBy(x => x.Author.LastName).ToList();
-
-				return View("ArticlesList", articleList);
+				return View("ArticlesList", articles);
 			}
-			return RedirectToPage("/AddArticle");
+			return RedirectToAction("CreateArticle");
 		}
+		/// <summary>
+		/// [Get] Метод, страница статьи
+		/// </summary>
 		[Authorize]
-		[Route("GetArticlesByAuthor")]
+		[Route("GetArticle")]
 		[HttpGet]
-		public async Task<IActionResult> GetArticlesByAuthor()
+		public async Task<IActionResult> GetArticle(Guid id)
 		{
-			var currentUser = await _userService.GetCurrentUserAsync(User);
+			var model = await _articleService.GetArticleAsync(id);
 
-			var articles = await _articleService.GetAllArticlesByAuthorIdAsync(currentUser);
-
-			if (articles != null && currentUser != null)
-			{
-				var articleList = new ArticleListViewModel();
-
-				articleList.Articles.AddRange(articles);
-
-				var result = articleList.Articles.OrderBy(x => x.Title).ToList();
-
-				return Ok(result);
-			}
-			return Ok();
+			return View("ArticlePage", model);
 		}
-		[Authorize("OnlyModerator&Admin")]
-		[Route("GetArticlesByAuthorId")]
-		[HttpGet]
-		public async Task<IActionResult> GetArticlesByAuthorId(string id)
-		{
-			var requiredUser = await _userService.GetUserByIdAsync(id);
-
-			var articles = await _articleService.GetAllArticlesByAuthorIdAsync(requiredUser);
-
-			if (articles != null && requiredUser != null)
-			{
-				var articleList = new ArticleListViewModel();
-
-				articleList.Articles.AddRange(articles);
-
-				var result = articleList.Articles.OrderBy(x => x.Title).ToList();
-
-				return Ok(result);
-			}
-			return Ok("Articles not found");
-		}
+		/// <summary>
+		/// [Post] Метод, редактирование статьи
+		/// </summary>
 		[Authorize]
 		[Route("EditArticle")]
-		[HttpGet]
+		[HttpPost]
 		public async Task<IActionResult> EditArticle(Guid id)
 		{
-			var article = await _articleService.GetArticleByIdAsync(id);
-
-			if (article != null)
-			{
-				var editModel = _mapper.Map<EditArticleViewModel>(article);
-				if (User.IsInRole("User"))
-				{
-					var user = await _userService.GetCurrentUserAsync(User);
-					if (user.Id == article.AuthorId)
-					{
-						return Ok(editModel);
-					}
-					return Ok();
-				}
-				else
-				{
-					return Ok(editModel);
-				}
-			}
-			return Ok();
+			var model = await _articleService.EditArticleAsync(id);
+			return View(model);
 		}
+		/// <summary>
+		/// [Post] Метод, обновление статьи
+		/// </summary>
 		[Authorize]
 		[Route("UpdateArticle")]
 		[HttpPost]
-		public async Task<IActionResult> UpdateArticle(EditArticleViewModel? model)
+		public async Task<IActionResult> UpdateArticle(EditArticleViewModel model)
 		{
-			var article = await _articleService.GetArticleByIdAsync(model.Id);
+			if (ModelState.IsValid)
+			{
+				await _articleService.UpdateArticleAsync(model);
 
-			await _articleService.UpdateArticleAsync(article);
-			return Ok();
+				return RedirectToAction("GetAllArticle");
+			}
+			else
+			{
+				ModelState.AddModelError("", "Некорректные значения");
+				string errorMessages = "";
+				foreach (var item in ModelState)
+				{
+					if (item.Value.ValidationState == ModelValidationState.Invalid)
+					{
+						errorMessages = $"{errorMessages}\nОшибки для свойства {item.Key}:\n";
+						foreach (var error in item.Value.Errors)
+						{
+							errorMessages = $"{errorMessages}{error.ErrorMessage}\n";
+						}
+					}
+				}
+				return RedirectToAction("EditArticle");
+			}
 		}
+		/// <summary>
+		/// [Post] Метод, удаление статьи
+		/// </summary>
 		[Authorize]
 		[Route("DeleteArticle")]
 		[HttpPost]
 		public async Task<IActionResult> DeleteArticle(Guid id)
 		{
-			var article = await _articleService.GetArticleByIdAsync(id);
-			if (article != null)
-			{
-				if (User.IsInRole("User"))
-				{
-					var user = await _userService.GetCurrentUserAsync(User);
-					if (user.Id == article.AuthorId)
-					{
-						await _articleService.DeleteArticleAsync(article);
-						return Ok();
-					}
-					return Ok();
-				}
-				else
-				{
-					await _articleService.DeleteArticleAsync(article);
-					return Ok();
-				}
-			}
-			return Ok();
+			await _articleService.DeleteArticleAsync(id);
+			return RedirectToAction("GetAllArticle");
 		}
 	}
 }

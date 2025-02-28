@@ -1,0 +1,68 @@
+﻿@using BlogApp.Data.Models
+@using BlogApp.ViewModels.Articles
+@{
+	ViewData["Title"] = "EditArticle";
+}
+@model EditArticleViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.css">
+
+<label class="fs-5 mb-1">Редактирование статьи</label>
+
+<form class="frm" method="post" asp-controller="Article" asp-action="UpdateArticle">
+	<div asp-validation-summary="ModelOnly"></div>
+
+	<div class="form-check-inline">
+		<table>
+			@if (Model is not null)
+			{
+				@for (int i = 0; i < Model.Tags.Count; i++)
+				{
+					<p class="form-check-inline">
+						@Html.CheckBoxFor(model => Model.Tags[i].IsChecked, new { @class = "form-check-input" })
+						<lable class="tag-margin">@Model.Tags[i].Name</lable>
+						@Html.HiddenFor(model => @Model.Tags[i].Id)
+						@Html.HiddenFor(model => @Model.Tags[i].Name)
+					</p>
+				}
+				@Html.HiddenFor(model => model.AuthorId)
+			}
+		</table>
+	</div>
+	<div>
+		<label class="form-label">
+			<a class="" asp-area="" asp-controller="Tag" asp-action="CreateTag">Добавить новый тег</a>
+		</label>
+	</div>
+	<div class="mb-3">
+		<input asp-for="Title" class="form-control" />
+		<span asp-validation-for="Title" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<textarea asp-for="Description" class="form-control">
+			</textarea>
+		<span asp-validation-for="Description" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<textarea asp-for="Content" class="form-control">
+			</textarea>
+		<span asp-validation-for="Content" class="text-danger"></span>
+	</div>
+	<input asp-for="Id" hidden />
+	<div>
+		<input class="btn btn-primary" type="submit" value="Сохранить" />
+	</div>
+</form>
+@if(Model != null)
+{
+<div>
+	<label class="form-label">
+		<a class="" asp-area="" asp-controller="Article" asp-route-id="@Model.Id" asp-action="GetArticle">Выйти без сохранения</a>
+	</label>
+</div>
+}
+@section scripts {
+	<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

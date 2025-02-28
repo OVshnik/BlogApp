@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
-using Azure;
 using BlogApp.Data.Models;
 using BlogApp.Services;
-using BlogApp.ViewModels.ArticlesTags.Tags;
+using BlogApp.ViewModels.Tags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,128 +13,120 @@ namespace BlogApp.Controllers
     public class TagController : Controller
 	{
 		private readonly IMapper _mapper;
-		private readonly TagService _tagService;
-		private readonly ArticleService _articleService;
-		private readonly UserService _userService;
-		public TagController(IMapper mapper, TagService tagService, ArticleService articleService, UserService userService)
-		{
+		private readonly ITagService _tagService;
+		private readonly IArticleService _articleService;
+		private readonly IUserService _userService;
+		private ILogger<TagController> _logger;
+		public TagController(IMapper mapper, ITagService tagService, IArticleService articleService, IUserService userService, ILogger<TagController> logger)
+		{	
 			_mapper = mapper;
 			_tagService = tagService;
 			_articleService = articleService;
 			_userService = userService;
+			_logger = logger;
+
 		}
-		[Authorize("OnlyUser&Admin")]
+		/// <summary>
+		/// [Get] Метод, создание тега
+		/// </summary>
+		[Authorize]
 		[Route("CreateTag")]
 		[HttpGet]
-		public IActionResult CreateTag(Guid articleId)
+		public IActionResult CreateTag()
 		{
-			var newTag = new CreateTagViewModel()
-			{
-				ArticleId = articleId,
-			};
-			return View("AddTag", newTag);
+			return View("AddTag", new CreateTagViewModel());
 		}
-		[Authorize("OnlyUser&Admin")]
+		/// <summary>
+		/// [Post] Метод, создание тега
+		/// </summary>
+		[Authorize]
 		[Route("CreateTag")]
 		[HttpPost]
 		public async Task<IActionResult> CreateTag(CreateTagViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
-				var tag = _mapper.Map<Tag>(model);
+				await _tagService.CreateNewTagAsync(model);
+				_logger.LogInformation($"Создан тег с именем {model.Name}");
 
-				await _tagService.CreateNewTagAsync(tag);
-
-				return RedirectToPage("/CreateTag");
+				return RedirectToAction("GetTags");
 			}
-			return RedirectToPage("/TagsList");
+			return RedirectToAction("CreateTag");
 
 		}
-		[Authorize("OnlyUser&Admin")]
-		[Route("GetTag")]
+		/// <summary>
+		/// [Get] Метод, страница тега
+		/// </summary>
+		[Authorize]
+		[Route("TagPage")]
 		[HttpGet]
 		public async Task<IActionResult> GetTag(Guid id)
 		{
-			var findTag = await _tagService.GetTagByIdAsync(id);
-			if (findTag != null)
-			{
-				var tag = _mapper.Map<TagViewModel>(findTag);
-
-				return Ok(tag);
-			}
-			return Ok();
+			var model=await _tagService.GetTagAsync(id);
+			return View("TagPage", model);
 		}
-		[Authorize("OnlyUser&Admin")]
+		/// <summary>
+		/// [Get] Метод, список тегов
+		/// </summary>
+		[Authorize]
 		[Route("TagsList")]
 		[HttpGet]
 		public async Task<IActionResult> GetTags()
 		{
-			var findTags = await _tagService.GetAllTagsAsync();
-			if (findTags != null)
-			{
-				var tags = new ListTagsViewModel();
-				foreach (var tag in findTags)
-				{
-					tags.Tags.Add(new TagViewModel(tag));
-				}
-				return View("TagsList", tags);
-			}
+			var tags=await _tagService.GetAllTagsAsync();
+
+			if (tags.Tags.Count != 0)
+			return View("TagsList", tags);
+
 			return RedirectToPage("AddTag");
 		}
+		/// <summary>
+		/// [Post] Метод, редактирование тега
+		/// </summary>
 		[Authorize("OnlyUser&Admin")]
 		[Route("EditTag")]
-		[HttpGet]
+		[HttpPost]
 		public async Task<IActionResult> EditTag(Guid id)
 		{
-			var tag = await _tagService.GetTagByIdAsync(id);
-			if (tag != null)
-			{
-				var edTag = _mapper.Map<EditTagViewModel>(tag);
-				if (User.IsInRole("User"))
-				{
-					var user = await _userService.GetCurrentUserAsync(User);
-					var articles = await _articleService.GetAllArticlesByAuthorIdAsync(user);
-
-					if (articles.Where(x => x.Tags.Contains(tag)).FirstOrDefault() != null)
-					{
-						return Ok(edTag);
-					}
-					return Ok();
-				}
-				else
-				{
-					return Ok(edTag);
-				}
-			}
-			return Ok();
+			var model = await _tagService.EditTag(id);
+			return View(model);
 		}
+		/// <summary>
+		/// [Post] Метод, обновление тега
+		/// </summary>
 		[Authorize("OnlyUser&Admin")]
 		[Route("UpdateTag")]
 		[HttpPost]
 		public async Task<IActionResult> UpdateTag(EditTagViewModel model)
 		{
-			var tag = _mapper.Map<Tag>(model);
-			await _tagService.UpdateTagAsync(tag);
-			return Ok(model);
+			if (ModelState.IsValid)
+			{
+				await _tagService.UpdateTagAsync(model);
+				_logger.LogDebug($"Данные тега с именем '{model.Name}' изменены");
+				return RedirectToAction("GetTags");
+			}
+			return RedirectToAction("EditTag");
 		}
+		/// <summary>
+		/// [Post] Метод, удаление тега
+		/// </summary>
 		[Authorize("OnlyUser&Admin")]
 		[Route("DeleteTag")]
-		[HttpGet]
+		[HttpPost]
 		public async Task<IActionResult> DeleteTag(Guid id)
 		{
-			var tag = await _tagService.GetTagByIdAsync(id);
-			if (tag != null)
-			{
-				await _tagService.DeleteTagAsync(tag);
-				return Ok();
-			}
-			return Ok();
+			await _tagService.DeleteTagAsync(id);
+			_logger.LogDebug($"Тег с id={id} удален");
+			return RedirectToAction("GetTags");
 		}
+		/// <summary>
+		/// Метод, проверка имени тега на уникальность
+		/// </summary>
 		[AcceptVerbs("Get", "Post")]
 		public async Task<IActionResult> CheckTagName(string name)
 		{
 			var tags = await _tagService.GetAllTagsAsync();
-			if (!tags.Where(x => x.Name == name).Any())
+			if (!tags.Tags.Where(x => x.Name == name).Any())
 			{
 				return Json(true);
 			}

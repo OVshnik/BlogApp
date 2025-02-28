@@ -1,33 +1,66 @@
-﻿@using BlogApp.ViewModels.ArticlesTags.Articles
+﻿@using BlogApp.Data.Models
+@using BlogApp.ViewModels.Articles
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@inject SignInManager<User> SignInManager
 @{
 	ViewData["Title"] = "ArticlesList";
 }
 @model ArticleListViewModel
 
-<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="css/bootstrap.css">
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">
 
-<div class="form-control back-white fr-block">
-	@if(Model.Articles.Count!=0)
+<div class="list-group back-white fr-block">
+	@if (Model.Articles.Count != 0)
 	{
-		@foreach(var article in Model.Articles)
+		<div>
+			<label class="fs-5">Статьи</label>
+		</div>
+		<a class="text-decoration-none" method=get asp-area="" asp-controller="Article" asp-action="CreateArticle">Добавить новую статью</a>
+		@foreach (var article in Model.Articles)
 		{
-			<div class="list-group-flush">
-				<div class="list-group-flush">@article.Title</div>
-			</div>
-			<div class="list-group-flush">
-				<div class="list-group-flush">@article.Author</div>
-			</div>
-			<div class="list-group-flush">
-				<div class="list-group-flush">@article.Description</div>
-			</div>
-			<div class="list-group-flush">
-				<div class="list-group-flush">@article.Content</div>
-			</div>
-			<div class="list-group-flush">
-				<div class="list-group-flush">@article.Created</div>
+			<div class="form-control mb-1">
+				<a class="text-decoration-none" id="viewBtn" method=get asp-area="" asp-controller="Article" asp-route-id="@article.Id" asp-route-viewCounter="@article.ViewCounter" asp-action="GetArticle">
+					<div class="text-lg-start">@article.Title</div>
+				</a>
+
+				<div class="text-lg-start">@article.Description</div>
+				<div class="d-block">
+					@if (article.Tags != null)
+					{
+						@foreach (var tag in article.Tags)
+						{
+							<a class="" method=get asp-area="" asp-controller="Tag" asp-route-id="@tag.Id" asp-action="GetTag">
+								<span class="badge bg-info text-dark mb-1">@tag.Name</span>
+							</a>
+						}
+					}
+				</div>
+				<div style="color:darkgray; align-content:end" class="text-end">
+					Просмотров:
+					<label id="counter">@article.ViewCounter</label>
+				</div>
 			</div>
 		}
 	}
+	else
+	{
+		<div>
+			<label class="fs-5">Статей пока нет</label>
+		</div>
+		<a class="text-decoration-none" method=get asp-area="" asp-controller="Article" asp-action="CreateArticle">Добавить новую статью</a>
+	}
 </div>
-<a class="" method=get asp-area="" asp-controller="Article" asp-action="CreateArticle">Добавить новую статью</a>
+<script>
+	// let counter = 0;
+	document.getElementById("viewBtn").onclick = CounterFunc;
+	function CounterFunc(counter) {
+		counter++;
+		// var value = document.getElementById("counter").innerHTML;
+		// value = counter;
+		console.log(counter);
+		return counter;
+	}
+</script>
+

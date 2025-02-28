@@ -1,4 +1,4 @@
-﻿@using BlogApp.ViewModels.UsersRoles.Roles
+﻿@using BlogApp.ViewModels.Roles
 @{
 	ViewData["Title"] = "RolesList";
 }
@@ -7,15 +7,29 @@
 <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="css/bootstrap.css">
 
-<div class="form-control back-white fr-block">
-	@if(Model.Roles.Count!=0)
-	{
-		@foreach(var role in Model.Roles)
+
+@if (Model.Roles.Count != 0)
+{
+		<label class="fw-bold fs-5">Все роли</label>
+		<div>
+			<a class="" method=get asp-area="" asp-controller="Role" asp-action="CreateRole">Добавить роль</a>
+		</div>
+		@foreach (var role in Model.Roles)
 		{
-			<div class="list-group-flush">
-				<div class="list-group-flush">@role.Role.Name</div>
+			<div class="card mb-1">
+			<a class="text-decoration-none" method=get asp-area="" asp-controller="Role" asp-route-id="@role.Id" asp-action="GetRole">
+				<span class="badge bg-warning text-light mb-1">@role.Name</span>
+				</a>
+				<div style="color:darkgray; align-content:start">@role.Description</div>
 			</div>
 		}
-	}
-</div>
-<a class="" method=get asp-area="" asp-controller="Role" asp-action="CreateRole">Добавить роль</a>
+}
+else
+{
+	<label class="fs-5">Ролей пока нет</label>
+	<a class="" method=get asp-area="" asp-controller="Role" asp-action="CreateRole">Добавить роль</a>
+}
+
+
+
+

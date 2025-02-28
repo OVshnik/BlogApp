@@ -1,12 +1,16 @@
 using BlogApp;
 using BlogApp.Data;
-using BlogApp.Data.Extensions;
 using BlogApp.Data.Models;
 using BlogApp.Data.Repository;
 using BlogApp.Services;
+using NLog;
+using NLog.Fluent;
+using NLog.Web;
 using GenericUnitOfWork;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Security.Claims;
@@ -22,27 +26,29 @@ internal class Program
 		// Add services to the container.
 		builder.Services.AddControllersWithViews();
 
-		builder.Services.AddAutoMapper(typeof(MappingProfile));
+		builder.Services.AddAutoMapper(typeof(MappingProfile)) ;
 
-		builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Transient)
-			.AddUnitOfWork()
-			.AddCustomRepository<Article, ArticleRepository>()
-			.AddCustomRepository<Tag, TagRepository>()
-			.AddCustomRepository<Comment, CommentRepository>();
+		builder.Services.AddDbContext<ApplicationDbContext>(options => 
+			options.UseSqlServer(connection)).AddIdentity<User, Role>(opts =>
+			{
+				opts.Password.RequiredLength = 10;
+				opts.Password.RequireNonAlphanumeric = false;
+				opts.Password.RequireLowercase = false;
+				opts.Password.RequireUppercase = false;
+				opts.Password.RequireDigit = false;
+			}).AddEntityFrameworkStores<ApplicationDbContext>()
+			.AddDefaultTokenProviders(); 
 
-		builder.Services.AddIdentity<User, Role>(opts =>
-		{
-			opts.Password.RequiredLength = 10;
-			opts.Password.RequireNonAlphanumeric = false;
-			opts.Password.RequireLowercase = false;
-			opts.Password.RequireUppercase = false;
-			opts.Password.RequireDigit = false;
-		}).AddEntityFrameworkStores<ApplicationDbContext>();
 
-		builder.Services.AddTransient(typeof(UserService));
-		builder.Services.AddTransient(typeof(ArticleService));
-		builder.Services.AddTransient(typeof(CommentService));
-		builder.Services.AddTransient(typeof(TagService));
+		builder.Services.AddTransient<IArticleRepository, ArticleRepository>()
+			.AddTransient<ITagRepository, TagRepository>()
+			.AddTransient<ICommentRepository, CommentRepository>();
+
+		builder.Services.AddTransient<IUserService,UserService>();
+		builder.Services.AddTransient<IArticleService, ArticleService>();
+		builder.Services.AddTransient<ICommentService, CommentService>();
+		builder.Services.AddTransient<ITagService, TagService>();
+		builder.Services.AddTransient<IRoleService, RoleService>();
 
 		builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	    .AddCookie(options =>
@@ -51,25 +57,35 @@ internal class Program
 		options.AccessDeniedPath = "/Login";
 	    });
 		builder.Services.AddAuthorizationBuilder()
+			.AddPolicy("OnlyUberAdmin", policy =>
+			{
+				policy.RequireClaim(ClaimTypes.Role, "UberAdmin");
+			})
 			.AddPolicy("OnlyAdmin", policy =>
 			{
-				policy.RequireClaim(ClaimTypes.Role, "Admin");
+				policy.RequireClaim(ClaimTypes.Role, "Admin", "UberAdmin");
 			})
 			.AddPolicy("OnlyModerator&Admin", policy =>
 			{
-				policy.RequireClaim(ClaimTypes.Role, "Moderator","Admin");
+				policy.RequireClaim(ClaimTypes.Role, "Moderator","Admin", "UberAdmin");
 			})
 			.AddPolicy("OnlyUser&Admin", policy =>
 			{
-				policy.RequireClaim(ClaimTypes.Role, "User", "Admin");
+				policy.RequireClaim(ClaimTypes.Role, "User", "Admin", "UberAdmin");
 			});
+
+		builder.Logging
+			.ClearProviders()
+			.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace)
+			.AddConsole()
+			.AddNLog("nlog");
+		builder.Host.UseNLog();
 
 		var app = builder.Build();
 
 		if (!app.Environment.IsDevelopment())
 		{
 			app.UseExceptionHandler("/Home/Error");
-			// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 			app.UseHsts();
 		}
 
@@ -78,7 +94,10 @@ internal class Program
 
 		app.UseRouting();
 
+		app.UseAuthentication();
 		app.UseAuthorization();
+
+		app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
 		app.MapControllerRoute(
 			name: "default",

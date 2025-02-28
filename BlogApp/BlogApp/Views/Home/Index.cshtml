@@ -1,6 +1,6 @@
 ﻿@using BlogApp.Data.Models
 @using Microsoft.AspNetCore.Identity;
-@using BlogApp.ViewModels.UsersRoles.Users;
+@using BlogApp.ViewModels.Users;
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager;
 
@@ -9,14 +9,30 @@
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link rel="stylesheet" href="css/special.css">
 @if (SignInManager.IsSignedIn(User))
 {
+    <a class="text-decoration-none" asp-action="MyPage" asp-controller="User" >
+    <div class="container">
+        <svg viewBox="0 0 1400 200">
+            <symbol id="s-text">
+                <text text-anchor="middle" x="70%" y="60%">OwnBlog</text>
+            </symbol>
 
+            <g class="g-ants">
+                <use xlink:href="#s-text" class="text-copy"></use>
+                <use xlink:href="#s-text" class="text-copy"></use>
+                <use xlink:href="#s-text" class="text-copy"></use>
+                <use xlink:href="#s-text" class="text-copy"></use>
+                <use xlink:href="#s-text" class="text-copy"></use>
+            </g>
+        </svg>
+    </div>
+    </a>
 }
 else
 {
-    <div class="main">
+    <div class="">
         <partial name="Login" model="Model" />
-@*         <partial name="Register" model="Model.Register" /> *@
     </div>
 }

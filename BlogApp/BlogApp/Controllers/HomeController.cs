@@ -1,4 +1,5 @@
 using BlogApp.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -22,11 +23,22 @@ namespace BlogApp.Controllers
 		{
 			return View();
 		}
-
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
+		[NonAction]
+		[Route("Error")]
+		public IActionResult Error(int? statusCode = null)
 		{
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+			if (statusCode.HasValue)
+			{
+				if (statusCode == 404 || statusCode == 403|| statusCode==500)
+				{
+					var viewName = statusCode.ToString();
+					_logger.LogWarning($"Произошла ошибка - {statusCode}\n{viewName}");
+					return View(viewName);
+				}
+				else
+					return View("500");
+			}
+			return View("500");
 		}
 	}
 }

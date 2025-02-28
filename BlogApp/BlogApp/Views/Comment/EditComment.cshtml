@@ -1,0 +1,35 @@
+﻿@using BlogApp.ViewModels.Comments
+@{
+	ViewData["Title"] = "EditComment";
+}
+@model EditCommentViewModel
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.css">
+
+<label class="fs-5">Редактирование комментария</label>
+<form class="frm" method="post" asp-controller="Comment" asp-action="UpdateComment">
+	<div asp-validation-summary="ModelOnly"></div>
+	<div>
+		<div class="mb-3">
+			<input asp-for="Content" class="form-control" />
+			<span asp-validation-for="Content" class="text-danger"></span>
+			<input asp-for="Id" hidden/>
+			<input asp-for="ArticleId" hidden/>
+			<input asp-for="CommentMakerId" hidden/>
+		</div>
+	</div>
+	<div>
+		<input class="btn btn-primary" type="submit" value="Сохранить" />
+	</div>
+</form>
+<div>
+	<label class="form-label">
+		<a class="" asp-area="" asp-controller="Comment" asp-action="GetAllComments">Перейти к списку всех комментариев</a>
+	</label>
+</div>
+@section scripts {
+
+	<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

@@ -1,5 +1,5 @@
 ﻿using BlogApp.Data.Models;
-using BlogApp.ViewModels.UsersRoles.Users;
+using BlogApp.ViewModels.Users;
 
 namespace BlogApp.Extensions
 {
@@ -7,10 +7,6 @@ namespace BlogApp.Extensions
 	{
 		public static User Convert(this User user, UserEditViewModel viewModel)
 		{
-			if (!string.IsNullOrEmpty(viewModel.Image))
-			{
-				user.Image = viewModel.Image;
-			}
 			if (!string.IsNullOrEmpty(viewModel.LastName))
 			{
 				user.LastName = viewModel.LastName;
