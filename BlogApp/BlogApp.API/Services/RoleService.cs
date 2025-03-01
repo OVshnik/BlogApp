@@ -6,95 +6,94 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using BlogApp.API.Exceptions;
 
-namespace BlogApp.API.Services
-{
-	public class RoleService : IRoleService
-	{
-		private readonly RoleManager<Role> _roleManager;
-		private readonly UserManager<User> _userManager;
-		private readonly IMapper _mapper;
-		public RoleService(RoleManager<Role> roleManager, IMapper mapper, UserManager<User> userManager)
-		{
-			_roleManager = roleManager;
-			_userManager = userManager;
-			_mapper = mapper;
-		}
-		/// <summary>
-		/// Метод для создания роли
-		/// </summary>
-		public async Task<IdentityResult> CreateRoleAsync(CreateRoleViewModel model)
-		{
-			var role = _mapper.Map<Role>(model);
+namespace BlogApp.API.Services;
 
-			return await _roleManager.CreateAsync(role);
-		}
-		/// <summary>
-		/// Метод для обновления роли
-		/// </summary>
-		public async Task<IdentityResult> UpdateRoleAsync(EditRoleViewModel model)
+public class RoleService : IRoleService
+{
+	private readonly RoleManager<Role> _roleManager;
+	private readonly UserManager<User> _userManager;
+	private readonly IMapper _mapper;
+	public RoleService(RoleManager<Role> roleManager, IMapper mapper, UserManager<User> userManager)
+	{
+		_roleManager = roleManager;
+		_userManager = userManager;
+		_mapper = mapper;
+	}
+	/// <summary>
+	/// Метод для создания роли
+	/// </summary>
+	public async Task<IdentityResult> CreateRoleAsync(CreateRoleViewModel model)
+	{
+		var role = _mapper.Map<Role>(model);
+
+		return await _roleManager.CreateAsync(role);
+	}
+	/// <summary>
+	/// Метод для обновления роли
+	/// </summary>
+	public async Task<IdentityResult> UpdateRoleAsync(EditRoleViewModel model)
+	{
+		var role = await _roleManager.FindByIdAsync(model.Id);
+		if (role != null)
 		{
-			var role = await _roleManager.FindByIdAsync(model.Id);
-			if (role != null)
-			{
-				role.Name = model.Name;
-				role.Description = model.Description;
-				var result = await _roleManager.UpdateAsync(role);
-				return result;
-			}
-			return IdentityResult.Failed();
+			role.Name = model.Name;
+			role.Description = model.Description;
+			var result = await _roleManager.UpdateAsync(role);
+			return result;
 		}
-		/// <summary>
-		/// Метод для получения роли
-		/// </summary>
-		public async Task<RoleViewModel> GetRoleAsync(string id)
+		return IdentityResult.Failed();
+	}
+	/// <summary>
+	/// Метод для получения роли
+	/// </summary>
+	public async Task<RoleViewModel> GetRoleAsync(string id)
+	{
+		var findRole = await _roleManager.FindByIdAsync(id);
+		if (findRole != null)
 		{
-			var findRole = await _roleManager.FindByIdAsync(id);
-			if (findRole != null)
-			{
-				var role = _mapper.Map<RoleViewModel>(findRole);
-				return role;
-			}
-			throw new ModelNotFoundException($"Роль с id={id} не удалось получить из БД");
+			var role = _mapper.Map<RoleViewModel>(findRole);
+			return role;
 		}
-		/// <summary>
-		/// Метод для получения всех ролей
-		/// </summary>
-		public async Task<ListRolesViewModel> GetAllRolesAsync()
+		throw new ModelNotFoundException($"Роль с id={id} не удалось получить из БД");
+	}
+	/// <summary>
+	/// Метод для получения всех ролей
+	/// </summary>
+	public async Task<ListRolesViewModel> GetAllRolesAsync()
+	{
+		var allRoles = await _roleManager.Roles.ToListAsync();
+		var roles = new ListRolesViewModel();
+		if (allRoles != null)
 		{
-			var allRoles = await _roleManager.Roles.ToListAsync();
-			var roles = new ListRolesViewModel();
-			if (allRoles != null)
-			{
-				roles.Roles.AddRange(allRoles);
-				return roles;
-			}
+			roles.Roles.AddRange(allRoles);
 			return roles;
 		}
-		/// <summary>
-		/// Метод для удаления роли
-		/// </summary>
-		public async Task DeleteRoleAsync(string id, ClaimsPrincipal claims)
-		{
-			var user = await _userManager.GetUserAsync(claims);
-			var role = await _roleManager.FindByIdAsync(id);
+		return roles;
+	}
+	/// <summary>
+	/// Метод для удаления роли
+	/// </summary>
+	public async Task DeleteRoleAsync(string id, ClaimsPrincipal claims)
+	{
+		var user = await _userManager.GetUserAsync(claims);
+		var role = await _roleManager.FindByIdAsync(id);
 
-			if (role != null && user != null && role.Name != null)
+		if (role != null && user != null && role.Name != null)
+		{
+			if (!await _userManager.IsInRoleAsync(user, role.Name))
 			{
-				if (!await _userManager.IsInRoleAsync(user, role.Name))
-				{
-					await _roleManager.DeleteAsync(role);
-				}
+				await _roleManager.DeleteAsync(role);
 			}
 		}
-		/// <summary>
-		/// Метод для проверки уникальности имени роли
-		/// </summary>
-		public async Task<Role> CheckNameAsync(string name)
-		{
-			var role = await _roleManager.FindByNameAsync(name);
-			if (role != null)
-				return role;
-			throw new ModelNotFoundException($"Роль с именем {name} не удалось получить из БД");
-		}
+	}
+	/// <summary>
+	/// Метод для проверки уникальности имени роли
+	/// </summary>
+	public async Task<Role> CheckNameAsync(string name)
+	{
+		var role = await _roleManager.FindByNameAsync(name);
+		if (role != null)
+			return role;
+		throw new ModelNotFoundException($"Роль с именем {name} не удалось получить из БД");
 	}
 }

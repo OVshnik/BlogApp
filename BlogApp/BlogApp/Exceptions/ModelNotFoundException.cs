@@ -1,8 +1,7 @@
-﻿namespace BlogApp.Exceptions
+﻿namespace BlogApp.Exceptions;
+
+public class ModelNotFoundException : Exception
 {
-	public class ModelNotFoundException : Exception
-	{
-		public ModelNotFoundException(string message)
-	   : base(message) { }
-	}
+	public ModelNotFoundException(string message)
+   : base(message) { }
 }

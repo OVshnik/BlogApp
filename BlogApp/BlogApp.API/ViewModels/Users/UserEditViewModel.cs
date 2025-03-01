@@ -1,33 +1,33 @@
 ﻿using BlogApp.Data.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace BlogApp.API.ViewModels.Users
+namespace BlogApp.API.ViewModels.Users;
+
+public class UserEditViewModel
 {
-    public class UserEditViewModel
-    {
-        public string UserId { get; set; } = string.Empty;
+    public string UserId { get; set; } = string.Empty;
 
-        [DataType(DataType.Text)]
-        [Display(Name = "Имя", Prompt = "Введите имя")]
-        public string FirstName { get; set; } = string.Empty;
+    [DataType(DataType.Text)]
+    [Display(Name = "Имя", Prompt = "Введите имя")]
+    public string FirstName { get; set; } = string.Empty;
 
-        [DataType(DataType.Text)]
-        [Display(Name = "Фамилия", Prompt = "Введите фамилию")]
-        public string LastName { get; set; } = string.Empty;
+    [DataType(DataType.Text)]
+    [Display(Name = "Фамилия", Prompt = "Введите фамилию")]
+    public string LastName { get; set; } = string.Empty;
 
-        [EmailAddress]
-        [Display(Name = "Email", Prompt = "example.com")]
-        public string Email { get; set; } = string.Empty;
+    [EmailAddress]
+    [Display(Name = "Email", Prompt = "example.com")]
+    public string Email { get; set; } = string.Empty;
 
-        [DataType(DataType.Date)]
-        [Display(Name = "Дата рождения")]
-        public DateTime BirthDate { get; set; }
+    [DataType(DataType.Date)]
+    [Display(Name = "Дата рождения")]
+    public DateTime BirthDate { get; set; }
 
-        public string UserName => Email;
+    public string UserName => Email;
 
-        [DataType(DataType.Text)]
-        [Display(Name = "Отчество", Prompt = "Введите отчество")]
-        public string MiddleName { get; set; } = string.Empty;
+    [DataType(DataType.Text)]
+    [Display(Name = "Отчество", Prompt = "Введите отчество")]
+    public string MiddleName { get; set; } = string.Empty;
 
 		[Required(ErrorMessage = "Поле Пароль обязательно для заполнения")]
 		[DataType(DataType.Password)]
@@ -37,5 +37,4 @@ namespace BlogApp.API.ViewModels.Users
 
 		public List<Role> Roles { get; set; } = new List<Role>();
 
-    }
 }

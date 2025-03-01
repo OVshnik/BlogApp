@@ -15,12 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var mapperConfig = new MapperConfiguration((v) =>
-{
-	v.AddProfile(new APIMappingProfile());
-});
-
-IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddAutoMapper(typeof(APIMappingProfile));
 
 builder.Services.AddControllers().AddJsonOptions(options=>options.JsonSerializerOptions.ReferenceHandler=ReferenceHandler.IgnoreCycles);
 
@@ -45,7 +40,6 @@ builder.Services.AddTransient<IArticleRepository, ArticleRepository>()
 	.AddTransient<ITagRepository, TagRepository>()
 	.AddTransient<ICommentRepository, CommentRepository>();
 
-builder.Services.AddSingleton(mapper);
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IArticleService, ArticleService>();
 builder.Services.AddTransient<ICommentService, CommentService>();

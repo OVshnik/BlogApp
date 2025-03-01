@@ -1,13 +1,12 @@
 ﻿using BlogApp.Data.Models;
 
-namespace BlogApp.ViewModels.Comments
+namespace BlogApp.ViewModels.Comments;
+
+public class CommentViewModel
 {
-	public class CommentViewModel
+	public Comment Comment;
+	public CommentViewModel(Comment comment)
 	{
-		public Comment Comment;
-		public CommentViewModel(Comment comment)
-		{
-			Comment=comment;
-		}
+		Comment=comment;
 	}
 }

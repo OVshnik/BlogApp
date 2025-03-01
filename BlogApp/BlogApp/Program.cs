@@ -26,7 +26,7 @@ internal class Program
 		// Add services to the container.
 		builder.Services.AddControllersWithViews();
 
-		builder.Services.AddAutoMapper(typeof(MappingProfile)) ;
+		builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 		builder.Services.AddDbContext<ApplicationDbContext>(options => 
 			options.UseSqlServer(connection)).AddIdentity<User, Role>(opts =>

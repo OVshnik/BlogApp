@@ -1,9 +1,8 @@
 ﻿using BlogApp.Data.Models;
 
-namespace BlogApp.ViewModels.Users
+namespace BlogApp.ViewModels.Users;
+
+public class UserListViewModel
 {
-    public class UserListViewModel
-    {
-        public List<UserViewModel> Users { get; set; }=new List<UserViewModel>(){ };
-    }
+    public List<UserViewModel> Users { get; set; }=new List<UserViewModel>(){ };
 }

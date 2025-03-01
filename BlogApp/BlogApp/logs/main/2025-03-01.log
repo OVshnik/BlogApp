@@ -1,0 +1,24 @@
+2025-03-01 15:57:11.3644 | BlogApp.Controllers.AuthenticateController.Login | INFO | Пользователь с логином test@mail.ru вошел в систему 
+
+2025-03-01 17:10:11.6503 | BlogApp.Controllers.AuthenticateController.Logout | INFO | Пользователь с логином test@mail.ru вышел из системы 
+
+2025-03-01 17:11:04.2532 | BlogApp.Controllers.AuthenticateController.Login | INFO | Пользователь с логином admin@gmail.com вошел в систему 
+
+2025-03-01 17:16:12.1712 | BlogApp.Controllers.UserController.UpdateUser | DEBUG | У пользователя с логином test@mail.ru изменены данные 
+
+2025-03-01 17:16:52.9356 | BlogApp.Controllers.TagController.DeleteTag | DEBUG | Тег с id=2e7abec7-3986-4978-90b7-054c37c1b989 удален 
+
+2025-03-01 17:17:07.3542 | Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log | WARN | Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'. 
+
+2025-03-01 17:20:36.6694 | Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log | WARN | Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'. 
+
+2025-03-01 17:22:11.6157 | Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log | WARN | Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'. 
+
+2025-03-01 17:23:09.0798 | Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log | WARN | Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'. 
+
+2025-03-01 17:37:03.4546 | Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log | WARN | Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'. 
+
+2025-03-01 17:37:11.0446 | BlogApp.Controllers.CommentController.CreateComment | INFO | К статье с id=5b3563bf-c9a2-4975-b0f4-c9377ca0afb7 добавлен комментарий с id=c570a137-49c9-4f34-ab7e-d7b0482b7dd9 
+
+2025-03-01 17:37:21.4008 | BlogApp.Controllers.CommentController.CreateComment | INFO | К статье с id=37529102-2cc9-4f92-9f11-f5fe99df484a добавлен комментарий с id=73f95542-934c-454e-ba18-f0c39be890c1 
+

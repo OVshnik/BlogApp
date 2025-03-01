@@ -5,86 +5,85 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
-namespace BlogApp.API.Controllers
+namespace BlogApp.API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class RoleController : ControllerBase
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class RoleController : ControllerBase
+	private readonly IRoleService _roleService;
+	public RoleController(IRoleService roleService)
 	{
-		private readonly IRoleService _roleService;
-		public RoleController(IRoleService roleService)
+		_roleService = roleService;
+	}
+	[Authorize("OnlyAdmin")]
+	[HttpPost]
+	[Route("AddRole")]
+	public async Task<IActionResult> AddRole(CreateRoleViewModel model)
+	{
+		if (ModelState.IsValid)
 		{
-			_roleService = roleService;
-		}
-		[Authorize("OnlyAdmin")]
-		[HttpPost]
-		[Route("AddRole")]
-		public async Task<IActionResult> AddRole(CreateRoleViewModel model)
-		{
-			if (ModelState.IsValid)
-			{
-				var result = await _roleService.CreateRoleAsync(model);
-				if (result.Succeeded)
-					return StatusCode(201);
-				else
-				{
-					return StatusCode(501);
-				}
-			}
+			var result = await _roleService.CreateRoleAsync(model);
+			if (result.Succeeded)
+				return StatusCode(201);
 			else
 			{
-				return BadRequest("Указанные данные не прошли валидацию");
+				return StatusCode(501);
 			}
 		}
-		[Authorize("OnlyAdmin")]
-		[HttpGet]
-		[Route("GetRole")]
-		public async Task<IActionResult> GetRole(string id)
+		else
 		{
-			var role = await _roleService.GetRoleAsync(id);
-			if (role != null)
-			{
-				return StatusCode(200, role);
-			}
-			return NotFound();
+			return BadRequest("Указанные данные не прошли валидацию");
 		}
-		[Authorize("OnlyAdmin")]
-		[HttpGet]
-		[Route("GetAllRoles")]
-		public async Task<IActionResult> GetAllRoles()
+	}
+	[Authorize("OnlyAdmin")]
+	[HttpGet]
+	[Route("GetRole")]
+	public async Task<IActionResult> GetRole(string id)
+	{
+		var role = await _roleService.GetRoleAsync(id);
+		if (role != null)
 		{
-			var roles = await _roleService.GetAllRolesAsync();
-			if (roles != null)
-			{
-				return StatusCode(200, roles);
-			}
-			return NotFound();
+			return StatusCode(200, role);
 		}
-		[Authorize("OnlyAdmin")]
-		[HttpPatch]
-		[Route("EditRole")]
-		public async Task<IActionResult> EditRole(EditRoleViewModel model)
+		return NotFound();
+	}
+	[Authorize("OnlyAdmin")]
+	[HttpGet]
+	[Route("GetAllRoles")]
+	public async Task<IActionResult> GetAllRoles()
+	{
+		var roles = await _roleService.GetAllRolesAsync();
+		if (roles != null)
 		{
-			if (ModelState.IsValid)
-			{
-				var result = await _roleService.UpdateRoleAsync(model);
-				if (result.Succeeded)
-					return StatusCode(200);
-				else
-					return StatusCode(501);
-			}
+			return StatusCode(200, roles);
+		}
+		return NotFound();
+	}
+	[Authorize("OnlyAdmin")]
+	[HttpPatch]
+	[Route("EditRole")]
+	public async Task<IActionResult> EditRole(EditRoleViewModel model)
+	{
+		if (ModelState.IsValid)
+		{
+			var result = await _roleService.UpdateRoleAsync(model);
+			if (result.Succeeded)
+				return StatusCode(200);
 			else
-			{
-				return BadRequest("Указанные данные не прошли валидацию");
-			}
+				return StatusCode(501);
 		}
-		[Authorize("OnlyAdmin")]
-		[HttpDelete]
-		[Route("DeleteRole")]
-		public async Task<IActionResult> DeleteRole(string id)
+		else
 		{
-			await _roleService.DeleteRoleAsync(id, User);
-			return StatusCode(200);
+			return BadRequest("Указанные данные не прошли валидацию");
 		}
+	}
+	[Authorize("OnlyAdmin")]
+	[HttpDelete]
+	[Route("DeleteRole")]
+	public async Task<IActionResult> DeleteRole(string id)
+	{
+		await _roleService.DeleteRoleAsync(id, User);
+		return StatusCode(200);
 	}
 }
