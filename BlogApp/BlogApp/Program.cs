@@ -6,7 +6,6 @@ using BlogApp.Services;
 using NLog;
 using NLog.Fluent;
 using NLog.Web;
-using GenericUnitOfWork;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

@@ -10,10 +10,12 @@
 
 @if (Model.Tags.Count != 0)
 {
+	<div class="d-block">
 	<label class="fs-5">Все теги</label>
 	<div>
 	<a class="" method=get asp-area="" asp-controller="Tag" asp-action="CreateTag">Добавить тег</a>
 	</div>
+	
 	@foreach (var tag in Model.Tags)
 	{
 		<div class="card mb-1">
@@ -24,6 +26,7 @@
 		</div>
 
 	}
+	</div>
 }
 else
 {

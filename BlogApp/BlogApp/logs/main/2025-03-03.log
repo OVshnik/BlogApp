@@ -1,0 +1,6 @@
+2025-03-03 21:10:01.6504 | BlogApp.Controllers.AuthenticateController.Logout | INFO | Пользователь с логином admin@gmail.com вышел из системы 
+
+2025-03-03 21:10:30.6189 | BlogApp.Controllers.AuthenticateController.Login | INFO | Пользователь с логином test@mail.ru вошел в систему 
+
+2025-03-03 21:15:46.7002 | BlogApp.Controllers.TagController.CreateTag | INFO | Создан тег с именем kek 
+
