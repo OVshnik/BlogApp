@@ -28,6 +28,7 @@ public class ArticleService : IArticleService
 		_tagRepository = tagRepository;
 		_commentRepository = commentRepository;
 	}
+
 	/// <summary>
 	/// Метод для создания модели представления новой статьи
 	/// </summary>
@@ -47,9 +48,11 @@ public class ArticleService : IArticleService
 			{
 				newArticle.Tags.Add(_mapper.Map(tag, new TagViewModel()));
 			}
+			return newArticle;
 		}
 		throw new ModelNotFoundException($"Пользователя с именем {claims.Identity?.Name} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для создания новой статьи
 	/// </summary>
@@ -76,6 +79,7 @@ public class ArticleService : IArticleService
 		}
 		return article.Id;
 	}
+
 	/// <summary>
 	/// Метод для получения статьи по id
 	/// </summary>
@@ -103,6 +107,7 @@ public class ArticleService : IArticleService
 		}
 		throw new ModelNotFoundException($"Статью с id={id} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для получения всех статей из БД и передачи модели представления
 	/// </summary>
@@ -118,6 +123,7 @@ public class ArticleService : IArticleService
 		}
 		return articleList;
 	}
+
 	/// <summary>
 	/// Метод для редактирования статьи
 	/// </summary>
@@ -149,6 +155,7 @@ public class ArticleService : IArticleService
 		}
 		throw new ModelNotFoundException($"Статью с id={id} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для обновления данных статьи в БД
 	/// </summary>
@@ -177,6 +184,7 @@ public class ArticleService : IArticleService
 			await _articleRepository.UpdateArticleAsync(article);
 		}
 	}
+
 	/// <summary>
 	/// Метод для удаления статьи из БД
 	/// </summary>

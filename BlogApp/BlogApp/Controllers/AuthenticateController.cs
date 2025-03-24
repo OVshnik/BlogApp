@@ -9,28 +9,30 @@ using System.Security.Claims;
 
 namespace BlogApp.Controllers;
 
-    public class AuthenticateController : Controller
+public class AuthenticateController : Controller
 {
 	private readonly IMapper _mapper;
 	private readonly SignInManager<User> _signInManager;
 	private readonly IUserService _userService;
 	private readonly ILogger<AuthenticateController> _logger;
-	public AuthenticateController(SignInManager<User> signInManager, IMapper mapper,IUserService userService, ILogger<AuthenticateController> logger)
+	public AuthenticateController(SignInManager<User> signInManager, IMapper mapper, IUserService userService, ILogger<AuthenticateController> logger)
 	{
 		_signInManager = signInManager;
 		_mapper = mapper;
 		_userService = userService;
 		_logger = logger;
 	}
+
 	/// <summary>
 	/// [Get] Метод, вход пользователя в систему
 	/// </summary>
 	[Route("Login")]
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View("Login");
-        }
+	[HttpGet]
+	public IActionResult Login()
+	{
+		return View("Login");
+	}
+
 	/// <summary>
 	/// [Post] Метод, выход пользователя
 	/// </summary>
@@ -39,20 +41,22 @@ namespace BlogApp.Controllers;
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> Logout()
 	{
-		if(User.Identity!=null)
-		_logger.LogInformation($"Пользователь с логином {User.Identity.Name} вышел из системы");
+		if (User.Identity != null)
+			_logger.LogInformation($"Пользователь с логином {User.Identity.Name} вышел из системы", User.Identity.Name);
 
 		await _signInManager.SignOutAsync();
-		return RedirectToAction("Index","Home");
+		return RedirectToAction("Index", "Home");
 	}
+
 	/// <summary>
 	/// [Get] Метод, вход пользователя в систему
 	/// </summary>
 	[HttpGet]
-	public IActionResult Login(string returnUrl="")
+	public IActionResult Login(string returnUrl = "")
 	{
 		return View(new LoginViewModel { ReturnUrl = returnUrl });
 	}
+
 	/// <summary>
 	/// [Post] Метод, вход пользователя в систему
 	/// </summary>
@@ -67,8 +71,8 @@ namespace BlogApp.Controllers;
 
 			if (result.Succeeded)
 			{
-				_logger.LogInformation($"Пользователь с логином {model.Email} вошел в систему");
-				return RedirectToAction("Index","Home");
+				_logger.LogInformation($"Пользователь с логином {model.Email} вошел в систему", model.Email);
+				return RedirectToAction("Index", "Home");
 			}
 			else
 			{

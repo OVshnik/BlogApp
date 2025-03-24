@@ -15,7 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BlogApp.Controllers;
 
-    public class UserController : Controller
+public class UserController : Controller
 {
 	private readonly IMapper _mapper;
 	private readonly IUserService _userService;
@@ -28,18 +28,20 @@ namespace BlogApp.Controllers;
 		_roleManager = roleManager;
 		_logger = logger;
 	}
+
 	/// <summary>
 	/// [Get] Метод, страница пользователя
 	/// </summary>
 	[Authorize]
-        [Route("MyPage")]
-        [HttpGet]
-        public async Task<IActionResult> MyPage()
-        {
-		var model =await _userService.GetCurrentUserAsync(User);
+	[Route("MyPage")]
+	[HttpGet]
+	public async Task<IActionResult> MyPage()
+	{
+		var model = await _userService.GetCurrentUserAsync(User);
 
-            return View("UserPage", model);
-        }
+		return View("UserPage", model);
+	}
+
 	/// <summary>
 	/// [Get] Метод, страница пользователя
 	/// </summary>
@@ -48,21 +50,23 @@ namespace BlogApp.Controllers;
 	[HttpGet]
 	public async Task<IActionResult> GetUser(string id)
 	{
-	    var model=await _userService.GetUserAsync(id);
+		var model = await _userService.GetUserAsync(id);
 
-		return View("UserPage",model);
+		return View("UserPage", model);
 	}
+
 	/// <summary>
 	/// [Get] Метод, список всех пользователей
 	/// </summary>
 	[Authorize]
 	[Route("UserList")]
 	[HttpGet]
-	public async Task<IActionResult>GetAllUsers()
+	public async Task<IActionResult> GetAllUsers()
 	{
-		var users=await _userService.GetAllUsersAsync();
-		return View("UserList",users);
+		var users = await _userService.GetAllUsersAsync();
+		return View("UserList", users);
 	}
+
 	/// <summary>
 	/// [Get] Метод, редактирование пользователя
 	/// </summary>
@@ -73,10 +77,11 @@ namespace BlogApp.Controllers;
 	{
 		var user = User;
 
-		var model=await _userService.EditUser(user);
+		var model = await _userService.EditUser(user);
 
 		return View("EditUser", model);
 	}
+
 	/// <summary>
 	/// [Get] Метод, редактирование пользователя (только для администратора)
 	/// </summary>
@@ -89,20 +94,21 @@ namespace BlogApp.Controllers;
 
 		return View("EditUser", model);
 	}
+
 	/// <summary>
 	/// [Post] Метод, обновление данных пользователя
 	/// </summary>
 	[Route("UpdateUser")]
 	[Authorize]
 	[HttpPost]
-	public async Task<IActionResult>UpdateUser(UserEditViewModel model)
+	public async Task<IActionResult> UpdateUser(UserEditViewModel model)
 	{
 		if (ModelState.IsValid)
 		{
 			var result = await _userService.UpdateUserAsync(model);
 			if (result.Succeeded)
 			{
-				_logger.LogDebug($"У пользователя с логином {model.Email} изменены данные");
+				_logger.LogDebug($"У пользователя с логином {model.Email} изменены данные", model.Email);
 				return RedirectToAction("GetAllUsers");
 			}
 			else
@@ -126,6 +132,7 @@ namespace BlogApp.Controllers;
 			return RedirectToAction("EditUser");
 		}
 	}
+
 	/// <summary>
 	/// [Post] Метод, удаление пользователя
 	/// </summary>
@@ -134,10 +141,10 @@ namespace BlogApp.Controllers;
 	[HttpPost]
 	public async Task<IActionResult> DeleteUser(string id)
 	{
-		var user=await _userService.GetUserAsync(id);
-            await _userService.DeleteUserAsync(id);
+		var user = await _userService.GetUserAsync(id);
+		await _userService.DeleteUserAsync(id);
 
-		_logger.LogDebug($"Пользователь {user.User.Email} удален");
+		_logger.LogDebug($"Пользователь {user.User.Email} удален", user.User.Email);
 		return View("UserList");
 	}
 }

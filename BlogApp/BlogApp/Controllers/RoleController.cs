@@ -23,6 +23,7 @@ public class RoleController : Controller
 		_roleService = roleService;
 		_logger = logger;
 	}
+
 	/// <summary>
 	/// [Get] Метод, создание новой роли пользователя (только для администратора)
 	/// </summary>
@@ -33,6 +34,7 @@ public class RoleController : Controller
 	{
 		return View("AddRole", new CreateRoleViewModel());
 	}
+
 	/// <summary>
 	/// [Post] Метод, создание новой роли пользователя (только для администратора)
 	/// </summary>
@@ -69,6 +71,7 @@ public class RoleController : Controller
 			return RedirectToAction("CreateRole");
 		}
 	}
+
 	/// <summary>
 	/// [Get] Метод, список пользователей
 	/// </summary>
@@ -84,6 +87,7 @@ public class RoleController : Controller
 		}
 		return RedirectToPage("/AddRole");
 	}
+
 	/// <summary>
 	/// [Get] Метод, страница пользователя
 	/// </summary>
@@ -95,6 +99,7 @@ public class RoleController : Controller
 		var role = await _roleService.GetRoleAsync(id);
 		return View("RolePage", role);
 	}
+
 	/// <summary>
 	/// [Get] Метод, редактирование пользователя
 	/// </summary>
@@ -106,6 +111,7 @@ public class RoleController : Controller
 		var model = await _roleService.EditRoleAsync(id);
 		return View(model);
 	}
+
 	/// <summary>
 	/// [Post] Метод, обновление данных пользователя
 	/// </summary>
@@ -142,6 +148,7 @@ public class RoleController : Controller
 			return RedirectToAction("EditRole");
 		}
 	}
+
 	/// <summary>
 	/// [Post] Метод, удаление пользователя
 	/// </summary>
@@ -155,6 +162,7 @@ public class RoleController : Controller
 		return RedirectToAction("GetAllRoles");
 
 	}
+
 	/// <summary>
 	/// Метод, проверки имени роли пользователя на уникальность
 	/// </summary>

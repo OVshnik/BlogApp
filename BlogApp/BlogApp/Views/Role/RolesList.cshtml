@@ -10,6 +10,7 @@
 
 @if (Model.Roles.Count != 0)
 {
+	 <div class="mb-5">
 		<label class="fw-bold fs-5">Все роли</label>
 		<div>
 			<a class="" method=get asp-area="" asp-controller="Role" asp-action="CreateRole">Добавить роль</a>
@@ -23,6 +24,7 @@
 				<div style="color:darkgray; align-content:start">@role.Description</div>
 			</div>
 		}
+	</div>
 }
 else
 {

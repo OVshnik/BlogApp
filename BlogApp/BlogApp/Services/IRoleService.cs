@@ -14,4 +14,5 @@ public interface IRoleService
 	public Task DeleteRoleAsync(string id, ClaimsPrincipal claims);
 	public Task<EditRoleViewModel> EditRoleAsync(string id);
 	public Task<Role> CheckNameAsync(string name);
+	public Task CreateBaseRoles();
 }

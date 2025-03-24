@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Security.Claims;
+using BlogApp.Exceptions.Handlers;
 
 internal class Program
 {
@@ -22,6 +23,8 @@ internal class Program
 
 		string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
+		builder.Services.AddProblemDetails();
+		builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 		// Add services to the container.
 		builder.Services.AddControllersWithViews();
 

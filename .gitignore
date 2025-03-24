@@ -61,3 +61,5 @@ dkms.conf
 /BlogApp/BlogApp.API/obj/Debug/net8.0/scopedcss/bundle
 /BlogApp/BlogApp.API/obj/Debug/net8.0
 /BlogApp/BlogApp.API/obj
+/BlogApp/BlogApp/logs/errors
+/BlogApp/BlogApp/logs/main

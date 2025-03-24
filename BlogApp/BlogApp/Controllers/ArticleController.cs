@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BlogApp.Controllers;
 
-    public class ArticleController : Controller
+public class ArticleController : Controller
 {
 	private readonly IMapper _mapper;
 	private readonly IArticleService _articleService;
@@ -24,6 +24,7 @@ namespace BlogApp.Controllers;
 		_tagService = tagService;
 		_userManager = userManager;
 	}
+
 	/// <summary>
 	/// [Get] Метод, добавление статьи
 	/// </summary>
@@ -38,8 +39,9 @@ namespace BlogApp.Controllers;
 			var model = await _articleService.CreateNewArticleAsync(user);
 			return View("AddArticle", model);
 		}
-		return RedirectToPage("/Login");
+		return RedirectToAction("Login");
 	}
+
 	/// <summary>
 	/// [Post] Метод, добавление статьи
 	/// </summary>
@@ -48,14 +50,11 @@ namespace BlogApp.Controllers;
 	[HttpPost]
 	public async Task<IActionResult> CreateArticle(CreateArticleViewModel model)
 	{
-		if (model != null)
-		{
-			var AddArticleId = await _articleService.CreateNewArticleAsync(model);
+		var AddArticleId = await _articleService.CreateNewArticleAsync(model);
 
-			return RedirectToAction("GetAllArticle");
-		}
-		return RedirectToAction("CreateArticle");
+		return RedirectToAction("GetAllArticle");
 	}
+
 	/// <summary>
 	/// [Get] Метод, список статей
 	/// </summary>
@@ -71,6 +70,7 @@ namespace BlogApp.Controllers;
 		}
 		return RedirectToAction("CreateArticle");
 	}
+
 	/// <summary>
 	/// [Get] Метод, страница статьи
 	/// </summary>
@@ -83,6 +83,7 @@ namespace BlogApp.Controllers;
 
 		return View("ArticlePage", model);
 	}
+
 	/// <summary>
 	/// [Post] Метод, редактирование статьи
 	/// </summary>
@@ -94,6 +95,7 @@ namespace BlogApp.Controllers;
 		var model = await _articleService.EditArticleAsync(id);
 		return View(model);
 	}
+
 	/// <summary>
 	/// [Post] Метод, обновление статьи
 	/// </summary>
@@ -126,6 +128,7 @@ namespace BlogApp.Controllers;
 			return RedirectToAction("EditArticle");
 		}
 	}
+
 	/// <summary>
 	/// [Post] Метод, удаление статьи
 	/// </summary>

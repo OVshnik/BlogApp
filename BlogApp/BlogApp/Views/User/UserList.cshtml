@@ -15,7 +15,7 @@
 		<label class="fs-5">Пользователи</label>
 	</div>
 	var users = new List<UserViewModel>();
-	if (User.IsInRole("Admin"))
+	if (User.IsInRole("Admin")||User.IsInRole("UberAdmin"))
 	{
 		users = Model.Users;
 	}
@@ -33,7 +33,7 @@
 			<a class="text-decoration-none" method=get asp-area="" asp-controller="User" asp-route-id="@user.User.Id" asp-action="GetUser">
 				<div class="card-text">@user.User.GetFullName()</div>
 			</a>
-			@if (User.IsInRole("Admin"))
+			@if (User.IsInRole("Admin") || User.IsInRole("UberAdmin"))
 			{
 				<div class="card-text">
 					@if (user.Roles != null)

@@ -25,6 +25,7 @@ namespace BlogApp.Controllers;
 		_logger= logger;
 		_userService = userService;
 	}
+
 	/// <summary>
 	/// [Post] Метод, добавление комментария
 	/// </summary>
@@ -37,6 +38,7 @@ namespace BlogApp.Controllers;
 		_logger.LogInformation($"К статье с id={model.Id} добавлен комментарий с id={id}");
 		return RedirectToAction("GetAllArticle", "Article");
 	}
+
 	/// <summary>
 	/// [Get] Метод, страница с комментарием
 	/// </summary>
@@ -48,6 +50,7 @@ namespace BlogApp.Controllers;
 		var model=await _commentService.GetCommentAsync(id);
 		return View("CommentPage",model);
 	}
+
 	/// <summary>
 	/// [Get] Метод, список комментариев
 	/// </summary>
@@ -59,6 +62,7 @@ namespace BlogApp.Controllers;
 		var model=await _commentService.GetAllCommentsAsync();
 		return View("CommentsList",model);
 	}
+
 	/// <summary>
 	/// [Post] Метод, редактирования комментария
 	/// </summary>
@@ -70,6 +74,7 @@ namespace BlogApp.Controllers;
 		var model=await _commentService.EditComment(id);
 		return View(model);
 	}
+
 	/// <summary>
 	/// [Post] Метод, обновление комментария
 	/// </summary>
@@ -103,6 +108,7 @@ namespace BlogApp.Controllers;
 		}
 
 	}
+
 	/// <summary>
 	/// [Post] Метод, удаление комментария
 	/// </summary>

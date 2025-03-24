@@ -83,7 +83,7 @@
 		@{
 			var user = await UserManager.GetUserAsync(User);
 			if (user != null)
-				@if (User.IsInRole("Admin") || user.Id == Model.AuthorId)
+				@if (User.IsInRole("Admin") || User.IsInRole("UberAdmin") || user.Id == Model.AuthorId)
 				{
 					<div class="d-inline-flex mb-1">
 						<form asp-controller="Article" asp-action="EditArticle" asp-route-id="@Model.Id" method="post">

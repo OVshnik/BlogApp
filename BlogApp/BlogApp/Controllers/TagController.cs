@@ -26,6 +26,7 @@ namespace BlogApp.Controllers;
 		_logger = logger;
 
 	}
+
 	/// <summary>
 	/// [Get] Метод, создание тега
 	/// </summary>
@@ -36,6 +37,7 @@ namespace BlogApp.Controllers;
 	{
 		return View("AddTag", new CreateTagViewModel());
 	}
+
 	/// <summary>
 	/// [Post] Метод, создание тега
 	/// </summary>
@@ -54,6 +56,7 @@ namespace BlogApp.Controllers;
 		return RedirectToAction("CreateTag");
 
 	}
+
 	/// <summary>
 	/// [Get] Метод, страница тега
 	/// </summary>
@@ -65,6 +68,7 @@ namespace BlogApp.Controllers;
 		var model=await _tagService.GetTagAsync(id);
 		return View("TagPage", model);
 	}
+
 	/// <summary>
 	/// [Get] Метод, список тегов
 	/// </summary>
@@ -78,8 +82,9 @@ namespace BlogApp.Controllers;
 		if (tags.Tags.Count != 0)
 		return View("TagsList", tags);
 
-		return RedirectToPage("AddTag");
+		return RedirectToAction("CreateTag");
 	}
+
 	/// <summary>
 	/// [Post] Метод, редактирование тега
 	/// </summary>
@@ -91,6 +96,7 @@ namespace BlogApp.Controllers;
 		var model = await _tagService.EditTag(id);
 		return View(model);
 	}
+
 	/// <summary>
 	/// [Post] Метод, обновление тега
 	/// </summary>
@@ -107,6 +113,7 @@ namespace BlogApp.Controllers;
 		}
 		return RedirectToAction("EditTag");
 	}
+
 	/// <summary>
 	/// [Post] Метод, удаление тега
 	/// </summary>
@@ -119,6 +126,7 @@ namespace BlogApp.Controllers;
 		_logger.LogDebug($"Тег с id={id} удален");
 		return RedirectToAction("GetTags");
 	}
+
 	/// <summary>
 	/// Метод, проверка имени тега на уникальность
 	/// </summary>

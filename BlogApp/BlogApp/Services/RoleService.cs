@@ -19,6 +19,7 @@ public class RoleService : IRoleService
 		_userManager = userManager;
 		_mapper = mapper;
 	}
+
 	/// <summary>
 	/// Метод для создания роли
 	/// </summary>
@@ -28,6 +29,7 @@ public class RoleService : IRoleService
 
 		return await _roleManager.CreateAsync(role);
 	}
+
 	/// <summary>
 	/// Метод для редактирования роли
 	/// </summary>
@@ -39,6 +41,7 @@ public class RoleService : IRoleService
 
 		return model;
 	}
+
 	/// <summary>
 	/// Метод для обновления роли
 	/// </summary>
@@ -54,6 +57,7 @@ public class RoleService : IRoleService
 		}
 		return IdentityResult.Failed();
 	}
+
 	/// <summary>
 	/// Метод для получения роли
 	/// </summary>
@@ -67,6 +71,7 @@ public class RoleService : IRoleService
 		}
 		throw new ModelNotFoundException($"Роль с id={id} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для получения всех ролей
 	/// </summary>
@@ -84,6 +89,7 @@ public class RoleService : IRoleService
 		}
 		return roles;
 	}
+
 	/// <summary>
 	/// Метод для удаления роли
 	/// </summary>
@@ -100,6 +106,7 @@ public class RoleService : IRoleService
 			}
 		}
 	}
+
 	/// <summary>
 	/// Метод для проверки уникальности имени роли
 	/// </summary>
@@ -109,5 +116,17 @@ public class RoleService : IRoleService
 		if (role != null) 
 		return role;
 		throw new ModelNotFoundException($"Роль с именем {name} не удалось получить из БД");
+	}
+
+	/// <summary>
+	/// Метод для проверки базовых ролей
+	/// </summary>
+	public async Task CreateBaseRoles()
+	{
+		var r = await _roleManager.FindByNameAsync("User");
+		if (await _roleManager.FindByNameAsync("User")==null)
+		await _roleManager.CreateAsync(new Role { Name = "User", Description = "Базовая роль пользователя" });
+		if (await _roleManager.FindByNameAsync("Admin") == null)
+			await _roleManager.CreateAsync(new Role { Name = "Admin", Description = "Роль администратора" });
 	}
 }

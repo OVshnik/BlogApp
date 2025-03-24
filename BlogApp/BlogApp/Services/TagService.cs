@@ -20,6 +20,7 @@ public class TagService : ITagService
 		_mapper = mapper;
 		_articleRepository = articleRepository;
 	}
+
 	/// <summary>
 	/// Метод для создания тега в БД
 	/// </summary>
@@ -30,6 +31,7 @@ public class TagService : ITagService
 		await _tagRepository.CreateTagAsync(newTag);
 		return newTag.Id;
 	}
+
 	/// <summary>
 	/// Метод для редактирования тега в БД
 	/// </summary>
@@ -40,6 +42,7 @@ public class TagService : ITagService
 
 		return model;
 	}
+
 	/// <summary>
 	/// Метод для обновления тега в БД
 	/// </summary>
@@ -53,6 +56,7 @@ public class TagService : ITagService
 			await _tagRepository.UpdateTagAsync(tag);
 		}
 	}
+
 	/// <summary>
 	/// Метод для получения тега из БД
 	/// </summary>
@@ -66,6 +70,7 @@ public class TagService : ITagService
 		}
 		throw new ModelNotFoundException($"Тег с id={id} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для получения всех тегов из БД
 	/// </summary>
@@ -84,6 +89,7 @@ public class TagService : ITagService
 		}
 		return tags;
 	}
+
 	/// <summary>
 	/// Метод для удаления тега из БД
 	/// </summary>

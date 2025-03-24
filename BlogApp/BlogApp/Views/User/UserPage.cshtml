@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="css/bootstrap.css">
 
 <label class="fs-5">Информация о пользователе</label>
-@if (UserManager.GetUserId(User) == Model.User.Id || User.IsInRole("Admin"))
+@if (UserManager.GetUserId(User) == Model.User.Id || User.IsInRole("Admin") || User.IsInRole("UberAdmin"))
 {
 	<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="css/bootstrap.css">
@@ -94,7 +94,7 @@
 			</div>
 		</div>
 	}
-	@if (User.IsInRole("Admin"))
+	@if (User.IsInRole("Admin") || User.IsInRole("UberAdmin"))
 	{
 		<div class="d-inline-flex m-1">
 			<form asp-controller="User" asp-action="AdminEditUser" asp-route-id="@Model.User.Id" method="post">

@@ -19,4 +19,6 @@ public interface IUserService
 	public Task<UserEditViewModel> EditUser(ClaimsPrincipal claims);
 	public Task<UserEditViewModel> EditUser(string id);
 	public Task<UserViewModel> GetCurrentUserAsync(ClaimsPrincipal claims);
+	public Task AddUberAdmin();
+
 }

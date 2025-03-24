@@ -36,6 +36,7 @@ public class UserService : IUserService
 		_articleRepository = articleRepository;
 		_commentRepository = commentRepository;
 	}
+
 	/// <summary>
 	/// Метод для создания view модели регистрации пользователя
 	/// </summary>
@@ -51,6 +52,7 @@ public class UserService : IUserService
 		}
 		return model;
 	}
+
 	/// <summary>
 	/// Метод для регистрации пользователя
 	/// </summary>
@@ -61,12 +63,12 @@ public class UserService : IUserService
 		if (result.Succeeded)
 		{
 			await _signInManager.SignInAsync(user, false);
-
 			await _userManager.AddToRoleAsync(user, "User");
 			return result;
 		}
 		return result;
 	}
+
 	/// <summary>
 	/// Метод для регистрации пользователя с правами администратора
 	/// </summary>
@@ -89,6 +91,7 @@ public class UserService : IUserService
 		}
 		return result;
 	}
+
 	/// <summary>
 	/// Метод для входа в систему
 	/// </summary>
@@ -107,6 +110,7 @@ public class UserService : IUserService
 		}
 		return SignInResult.Failed;
 	}
+
 	/// <summary>
 	/// Метод для создания view модели редактирования пользователя
 	/// </summary>
@@ -123,6 +127,7 @@ public class UserService : IUserService
 		}
 		return model;
 	}
+
 	/// <summary>
 	/// Метод для создания view модели редактирования пользователя
 	/// </summary>
@@ -156,6 +161,7 @@ public class UserService : IUserService
 		}
 		throw new ModelNotFoundException($"Пользователя с id={id} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для создания обновления данных пользователя
 	/// </summary>
@@ -182,6 +188,7 @@ public class UserService : IUserService
 		}
 		throw new ModelNotFoundException($"Пользователя с id={model.UserId} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для получения пользователя
 	/// </summary>
@@ -211,6 +218,7 @@ public class UserService : IUserService
 		}
 		throw new ModelNotFoundException($"Пользователя с id={id} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для получения текущего пользователя 
 	/// </summary>
@@ -240,6 +248,7 @@ public class UserService : IUserService
 		}
 		throw new ModelNotFoundException($"Пользователя с именем {claims.Identity?.Name} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для получения всех пользователей
 	/// </summary>
@@ -261,6 +270,7 @@ public class UserService : IUserService
 		}
 		return userList;
 	}
+
 	/// <summary>
 	/// Метод для удаления пользователя
 	/// </summary>
@@ -277,22 +287,24 @@ public class UserService : IUserService
 	/// <summary>
 	/// Метод для создания супер пользователя
 	/// </summary>
-	//public async Task<IdentityResult> AddAdmin()
-	//{
-	//	var admin = new User
-	//	{
-	//		FirstName = "UberAdmin",
-	//		LastName="Adminov",
-	//		BirthDate = DateTime.Now.AddYears(-30),
-	//		Email="admin@mail.ru",
-	//		UserName="UBERADMIN"
-	//	};
-	//	await _roleManager.CreateAsync(new Role() { Name="User"});
-	//	await _roleManager.CreateAsync(new Role() { Name="UberAdmin"});
-	//	var result=await _userManager.CreateAsync(admin, "1adminadmin1");
-	//	if (result.Succeeded)
-	//		await _userManager.AddToRoleAsync(admin,"User");
-	//		await _userManager.AddToRoleAsync(admin,"UberAdmin");
-	//          return result;
-	//}
+	public async Task AddUberAdmin()
+	{
+		
+		var admin = new User
+		{
+			FirstName = "UberAdmin",
+			LastName = "Adminov",
+			BirthDate = DateTime.Now.AddYears(-30),
+			Email = "admin@mail.ru",
+			UserName = "UBERADMIN"
+		};
+		if (await _userManager.FindByEmailAsync(admin.Email)==null)
+		{
+			await _roleManager.CreateAsync(new Role() { Name = "UberAdmin",Description="Роль супер-пользователя с неограниченными правами" });
+			var result = await _userManager.CreateAsync(admin, "1adminadmin1");
+			if (result.Succeeded)
+				await _userManager.AddToRoleAsync(admin, "User");
+			await _userManager.AddToRoleAsync(admin, "UberAdmin");
+		}
+	}
 }

@@ -1,4 +1,5 @@
 using BlogApp.Models;
+using BlogApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -8,14 +9,22 @@ namespace BlogApp.Controllers;
 public class HomeController : Controller
 {
 	private readonly ILogger<HomeController> _logger;
+	private readonly IRoleService _roleService;
+	private readonly IUserService _userService;
 
-	public HomeController(ILogger<HomeController> logger)
+	public HomeController(ILogger<HomeController> logger, IRoleService roleService, IUserService userService)
 	{
 		_logger = logger;
+		_roleService = roleService;
+		_userService = userService;	
 	}
 
-	public IActionResult Index()
+	public async Task<IActionResult> Index()
 	{
+		//Добавление базовых ролей//
+		await _roleService.CreateBaseRoles();
+		//Добавление тестового суперпользователя, который может создать пользователя с правами администратора//
+		await _userService.AddUberAdmin();
 		return View();
 	}
 
@@ -23,6 +32,7 @@ public class HomeController : Controller
 	{
 		return View();
 	}
+
 	[NonAction]
 	[Route("Error")]
 	public IActionResult Error(int? statusCode = null)

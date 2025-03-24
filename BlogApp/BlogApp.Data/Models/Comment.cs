@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BlogApp.Data.Models
 {
+	
 	public class Comment
 	{
 		public Guid Id { get; set; } = Guid.NewGuid();

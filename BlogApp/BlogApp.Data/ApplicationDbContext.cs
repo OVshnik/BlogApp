@@ -1,6 +1,7 @@
 ﻿using BlogApp.Data.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace BlogApp.Data
 {
@@ -19,6 +20,11 @@ namespace BlogApp.Data
 			{
 				Database.EnsureCreated();
 			}
+		}
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+			modelBuilder.Entity<Comment>().HasOne(x=>x.CommentMaker).WithMany().HasForeignKey(x=>x.CommentMakerId).OnDelete(DeleteBehavior.NoAction);
 		}
 	}
 }

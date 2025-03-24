@@ -22,6 +22,7 @@ public class CommentService : ICommentService
 		_mapper = mapper;
 		_userManager = userManager;
 	}
+
 	/// <summary>
 	/// Метод для создания комментария
 	/// </summary>
@@ -47,6 +48,7 @@ public class CommentService : ICommentService
 		}
 		return newComment.Id;
 	}
+
 	/// <summary>
 	/// Метод для получения комментария по id
 	/// </summary>
@@ -61,6 +63,7 @@ public class CommentService : ICommentService
 		}
 		throw new ModelNotFoundException($"Комментарий с id={id} не удалось получить из БД");
 	}
+
 	/// <summary>
 	/// Метод для получения всех комментариев
 	/// </summary>
@@ -82,6 +85,7 @@ public class CommentService : ICommentService
 		}
 		return model;
 	}
+
 	/// <summary>
 	/// Метод для редактирования комментария
 	/// </summary>
@@ -93,6 +97,7 @@ public class CommentService : ICommentService
 
 		return model;
 	}
+
 	/// <summary>
 	/// Метод для обновления комментария в БД
 	/// </summary>
@@ -106,6 +111,7 @@ public class CommentService : ICommentService
 			await _commentRepository.UpdateCommentAsync(comment);
 		}
 	}
+
 	/// <summary>
 	/// Метод для удаления комментария из БД
 	/// </summary>

@@ -23,7 +23,7 @@
 		<label class="form-check-label align-content-end" style="color:gray">@Model.Comment.Created.</label>
 	</div>
 </div>
-@if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+@if (User.IsInRole("UberAdmin") || User.IsInRole("Admin") || User.IsInRole("Moderator"))
 {
 	<div class="d-lg-inline-flex">
 		<form method=post asp-area="" asp-route-id="@Model.Comment.Id" asp-controller="Comment" asp-action="EditComment">

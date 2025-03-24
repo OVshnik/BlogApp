@@ -23,6 +23,7 @@ namespace BlogApp.Controllers;
 		_logger = logger;
 
 	}
+
 	/// <summary>
 	/// [Get] Метод, регистрация нового пользователя 
 	/// </summary>
@@ -33,6 +34,7 @@ namespace BlogApp.Controllers;
 		var model=_userService.Register();
 		return View("Register",model);
 	}
+
 	/// <summary>
 	/// [Post] Метод, регистрация нового пользователя 
 	/// </summary>
@@ -43,7 +45,7 @@ namespace BlogApp.Controllers;
 		if (ModelState.IsValid)
 		{
 			await _userService.Register(model);
-			_logger.LogInformation($"Пользователь с логином {model.EmailReg} зарегистрирован");
+			_logger.LogInformation($"Пользователь с логином {model.EmailReg} зарегистрирован",model.EmailReg);
 			return RedirectToAction("Index", "Home");
 		}
 		else
@@ -58,6 +60,7 @@ namespace BlogApp.Controllers;
 		}
 		return View("Register");
 	}
+
 	/// <summary>
 	/// [Post] Метод, регистрация нового пользователя (только для администратора)
 	/// </summary>
@@ -71,7 +74,7 @@ namespace BlogApp.Controllers;
 			var result=await _userService.AdminRegister(model);
 			if(result.Succeeded)
 			{
-				_logger.LogInformation($"Пользователь с логином {model.EmailReg} зарегистрирован");
+				_logger.LogInformation($"Пользователь с логином {model.EmailReg} зарегистрирован", model.EmailReg);
 				return RedirectToAction("Index", "Home");
 			}
 			else View("Register");
@@ -88,6 +91,7 @@ namespace BlogApp.Controllers;
 		}
 		return View("Register");
 	}
+
 	/// <summary>
 	/// [Post] Метод, добавление супер пользователя
 	/// </summary>
