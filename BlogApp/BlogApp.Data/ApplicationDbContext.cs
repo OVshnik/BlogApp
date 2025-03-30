@@ -10,6 +10,7 @@ namespace BlogApp.Data
 		public DbSet<Article> Articles { get; set; }
 		public DbSet<Tag> Tags { get; set; }
 		public DbSet<Comment> Comments { get; set; }
+		public DbSet<Message> Messages { get; set; }
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
 		{
 			if (Database.GetPendingMigrations().Any())

@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Security.Claims;
 using BlogApp.Exceptions.Handlers;
+using BlogApp.Chat;
 
 internal class Program
 {
@@ -25,7 +26,7 @@ internal class Program
 
 		builder.Services.AddProblemDetails();
 		builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-		// Add services to the container.
+
 		builder.Services.AddControllersWithViews();
 
 		builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -40,7 +41,6 @@ internal class Program
 				opts.Password.RequireDigit = false;
 			}).AddEntityFrameworkStores<ApplicationDbContext>()
 			.AddDefaultTokenProviders(); 
-
 
 		builder.Services.AddTransient<IArticleRepository, ArticleRepository>()
 			.AddTransient<ITagRepository, TagRepository>()
@@ -76,11 +76,13 @@ internal class Program
 				policy.RequireClaim(ClaimTypes.Role, "User", "Admin", "UberAdmin");
 			});
 
+		builder.Services.AddSignalR();
 		builder.Logging
 			.ClearProviders()
 			.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace)
 			.AddConsole()
 			.AddNLog("nlog");
+
 		builder.Host.UseNLog();
 
 		var app = builder.Build();
@@ -95,6 +97,8 @@ internal class Program
 		app.UseStaticFiles();
 
 		app.UseRouting();
+
+		app.MapHub<ChatHub>("/chat");
 
 		app.UseAuthentication();
 		app.UseAuthorization();

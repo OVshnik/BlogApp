@@ -1,0 +1,163 @@
+﻿@using BlogApp.Data.Models
+@using BlogApp.ViewModels.Chat
+@{
+	ViewData["Title"] = "Chat";
+}
+@model ChatViewModel;
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+@* <div class="container-fluid">
+    <div class="row">
+        <div class="col-8 position-relative min-vh-80">
+            <h4 style="text-align: center;">Login User: @Model.LoggedInUser.FullName</h4>
+            <div class="chat-window" id="chat-window">
+                <div class="chat-header">
+                    <span class="close" id="close-chat">×</span>
+                    <h4>Chat with <span id="chat-user">User</span></h4>
+                </div>
+                <div class="chat-body">
+                    <ul class="chat-ui" data-userid="" id="chatlist">
+                      
+                    </ul>
+                </div>
+                <div class="chat-footer">
+                    <input type="text" class="form-control" id="textmessage" placeholder="Type a message...">
+                    <button class="btn btn-primary ml-1" onclick="SendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 chatbox">
+            <h5 class="chatlisthead">Chat List</h5>
+            <div class="chat-list">
+                @if(Model!=null && Model.Users.Any())
+                {
+foreach(var user in Model.Users)
+                    {
+                        <div class="user" data-user-id="@user.UserId">
+                            <i class="fa fa-user-circle-o" aria-hidden="true"></i> @user.FullName
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+<div class="overlay" id="divloader" style="display:none">
+    <div class="a" style="--n: 5;position: absolute;top: 50%;left: 50%;">
+        <div class="dot" style="--i: 0;"></div>
+        <div class="dot" style="--i: 1;"></div>
+        <div class="dot" style="--i: 2;"></div>
+        <div class="dot" style="--i: 3;"></div>
+        <div class="dot" style="--i: 4;"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    function Loader(_value) {
+if (_value) {
+            document.getElementById("divloader").style.display = "block";
+        }
+else {
+            document.getElementById("divloader").style.display = "none";
+        }
+        setTimeout(function () { document.getElementById("divloader").style.display = "none"; }, 30000);
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".user").click(function () {
+var userId = $(this).data("user-id");
+var userName = $(this).text();
+            $("#chat-user").text(userName);
+            $("#chat-window").slideDown();
+            $("#chatlist").attr("data-userid", userId);
+            $("#chatlist").empty();
+            LoadUserChatList(userId);
+        });
+
+        $("#close-chat").click(function () {
+            $("#chat-window").slideUp();
+        });
+    });
+var senderChatId = "@Model.LoggedInUser.UserId";
+const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/RealTimeChatHub")
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+async function start() {
+try {
+await connection.start();
+            console.log("SignalR Connected.");
+//Creating user group with his unique chatId
+await connection.invoke("CreateUserChatGroup", senderChatId);
+        } catch (err) {
+            console.log(err);
+            setTimeout(start, 5000);
+        }
+    };
+
+    connection.on("ReceiveMessage", async (senderId, senderName,message) => {
+var messageBuilder = "<li class='left'><div class='text'><div class='user'>" + GetUserNameWithIcon(senderName) + "</div><small>" + message + "</small>" + "</li>"
+        $("#chatlist").append(messageBuilder);
+//Showing notifcation to user if get any message
+var notification = "You have received a message from user " + senderName;
+        toastr.success(notification);
+    });
+
+    connection.onclose(async () => {
+await start();
+    });
+
+// Start the connection.
+    start();
+
+async function SendMessage() {
+try {
+var message = $("#textmessage").val();
+if (message) {
+
+//Getting reciver unique chatId for sending message to reciver user chat Group so that others user can't recived it
+var reciverId = $("#chatlist").attr("data-userid");
+var senderName = '@Model.LoggedInUser.FullName';
+await connection.invoke("SendMessageToUserGroup", senderChatId, senderName, reciverId, message);
+var messageBuilder = "<li class='right'><div class='text'><div class='user'>" + GetUserNameWithIcon(senderName) + "</div><small>" + message + "</small>" + "</li>"
+                $("#chatlist").append(messageBuilder);
+                $("#textmessage").val("");
+            }
+else {
+
+                toastr.error("Please input message!");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+//Function for getting username and icon when binding message to the chat list
+    function GetUserNameWithIcon(userName) {
+return '<i class="fa fa-user-circle-o" aria-hidden="true"></i>' + userName;
+    }
+    function LoadUserChatList(name)
+    {
+        Loader(true)
+        $.ajax({
+            url: '/UserChat/GetChatCobversion?userIdToLoadChat=' + name,
+            type: 'GET',
+            success: function (result) {
+                $('#chatlist').html(result);
+                Loader(false)
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+                Loader(false)
+            }
+        });
+    }
+</script> *@
+@section scripts {
+	<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}
