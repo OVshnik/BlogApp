@@ -328,3 +328,13 @@
 2025-03-31 09:46:43.4653 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.4.0.3182. Product version: 5.4.0+4d45d445601312040107cbe2ac00e56c4bf4a60b. GlobalAssemblyCache: False
 2025-03-31 09:46:43.4653 Info Validating config: TargetNames=main, error, ConfigItems=35, FilePath=C:\Users\MSI\BlogApp\BlogApp\BlogApp\bin\Debug\net8.0\NLog.config
 2025-03-31 09:46:43.4832 Info Configuration initialized.
+2025-03-31 09:52:40.9686 Info Registered target NLog.Targets.FileTarget(Name=main)
+2025-03-31 09:52:40.9829 Info Registered target NLog.Targets.FileTarget(Name=error)
+2025-03-31 09:52:40.9829 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.4.0.3182. Product version: 5.4.0+4d45d445601312040107cbe2ac00e56c4bf4a60b. GlobalAssemblyCache: False
+2025-03-31 09:52:40.9959 Info Validating config: TargetNames=main, error, ConfigItems=35, FilePath=C:\Users\MSI\BlogApp\BlogApp\BlogApp\bin\Debug\net8.0\NLog.config
+2025-03-31 09:52:40.9959 Info Configuration initialized.
+2025-03-31 09:53:03.2111 Info Registered target NLog.Targets.FileTarget(Name=main)
+2025-03-31 09:53:03.2111 Info Registered target NLog.Targets.FileTarget(Name=error)
+2025-03-31 09:53:03.2111 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.4.0.3182. Product version: 5.4.0+4d45d445601312040107cbe2ac00e56c4bf4a60b. GlobalAssemblyCache: False
+2025-03-31 09:53:03.2373 Info Validating config: TargetNames=main, error, ConfigItems=35, FilePath=C:\Users\MSI\BlogApp\BlogApp\BlogApp\bin\Debug\net8.0\NLog.config
+2025-03-31 09:53:03.2473 Info Configuration initialized.
